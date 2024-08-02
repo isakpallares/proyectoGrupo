@@ -1,1 +1,1 @@
-#En esta carpeta solo se utilizará para el backend hecho con springboot. 
+#En esta carpeta solo se utilizará para el backend hecho con django. 

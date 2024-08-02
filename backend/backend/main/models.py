@@ -23,6 +23,7 @@ class Unidad(models.Model):
 
 # Modelo para Propietarios
 class Propietario(models.Model):
+
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
     documento_identidad = models.CharField(max_length=50, unique=True)
