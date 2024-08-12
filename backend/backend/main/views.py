@@ -1,6 +1,9 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, status
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from .models import Propiedad, Unidad, Propietario, Inquilino, CuotaMantenimiento, GastoComun, Pago, ContratoServicio
 from .serializers import PropiedadSerializer, UnidadSerializer, PropietarioSerializer, InquilinoSerializer, CuotaMantenimientoSerializer, GastoComunSerializer, PagoSerializer, ContratoServicioSerializer
+
 
 # ViewSet para Propiedad
 class PropiedadViewSet(viewsets.ModelViewSet):
@@ -16,6 +19,30 @@ class UnidadViewSet(viewsets.ModelViewSet):
 class PropietarioViewSet(viewsets.ModelViewSet):
     queryset = Propietario.objects.all()
     serializer_class = PropietarioSerializer
+
+class PropietarioCreateView(APIView):
+    #vista para verificar si existe el propietario
+    def post(self, request, *args, **kwargs):
+        # Obtener el documento de identidad del request data
+        documento_identidad = request.data.get('documento_identidad', None)
+
+        # Verificar si el documento de identidad ya existe
+        if Propietario.objects.filter(documento_identidad=documento_identidad).exists():
+            return Response(
+                {"error": "Ya existe un propietario con este documento de identidad."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Si no existe, procedemos a crear el nuevo propietario
+        serializer = PropietarioSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
 
 # ViewSet para Inquilino
 class InquilinoViewSet(viewsets.ModelViewSet):

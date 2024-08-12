@@ -32,22 +32,25 @@ function PropietarioList() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (editing) {
-            await axios.put(`http://localhost:8000/api/propietarios/${currentId}/`, propietario);
-            setEditing(false);
-        } else {
-            await axios.post('http://localhost:8000/api/propietarios/', propietario);
+        try {
+          const responseHandle = await axios.post('/api/propietarios/', propietario);
+          setMensaje('Propietario creado exitosamente.');
+          setPropietario({
+            nombre: '',
+            apellido: '',
+            documento_identidad: '',
+            telefono: '',
+            email: '',
+            direccion: '',
+          });
+        } catch (error) {
+          if (error.responseHandle && error.responseHandle.status === 400) {
+            setMensaje(error.responseHandle.data.error || 'Error al crear el propietario.');
+          } else {
+            setMensaje('Error del servidor. Intenta más tarde.');
+          }
         }
-        fetchPropietarios();
-        setPropietario({ 
-            nombre: '', 
-            apellido: '', 
-            documento_identidad: '', 
-            telefono: '', 
-            email: '', 
-            direccion: '' 
-        });
-    };
+      };
 
     const handleEdit = (propietario) => {
         setEditing(true);
