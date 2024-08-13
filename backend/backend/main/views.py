@@ -21,19 +21,13 @@ class PropietarioViewSet(viewsets.ModelViewSet):
     serializer_class = PropietarioSerializer
 
 class PropietarioCreateView(APIView):
-    #vista para verificar si existe el propietario
     def post(self, request, *args, **kwargs):
-        # Obtener el documento de identidad del request data
         documento_identidad = request.data.get('documento_identidad', None)
-
-        # Verificar si el documento de identidad ya existe
         if Propietario.objects.filter(documento_identidad=documento_identidad).exists():
             return Response(
                 {"error": "Ya existe un propietario con este documento de identidad."},
                 status=status.HTTP_400_BAD_REQUEST
             )
-
-        # Si no existe, procedemos a crear el nuevo propietario
         serializer = PropietarioSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()

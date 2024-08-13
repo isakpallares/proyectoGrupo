@@ -21,12 +21,12 @@ function InquilinoList() {
     }, []);
 
     const fetchInquilinos = async () => {
-        const response = await axios.get('http://localhost:8000/api/inquilinos/');
+        const response = await axios.get('http://localhost:8000/inquilinos/');
         setInquilinos(response.data);
     };
 
     const fetchUnidades = async () => {
-        const response = await axios.get('http://localhost:8000/api/unidades/');
+        const response = await axios.get('http://localhost:8000/unidades/');
         setUnidades(response.data);
     };
 
@@ -40,10 +40,10 @@ function InquilinoList() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (editing) {
-            await axios.put(`http://localhost:8000/api/inquilinos/${currentId}/`, inquilino);
+            await axios.put(`http://localhost:8000/inquilinos/${currentId}/`, inquilino);
             setEditing(false);
         } else {
-            await axios.post('http://localhost:8000/api/inquilinos/', inquilino);
+            await axios.post('http://localhost:8000/inquilinos/', inquilino);
         }
         fetchInquilinos();
         setInquilino({ 
@@ -63,7 +63,7 @@ function InquilinoList() {
     };
 
     const handleDelete = async (id) => {
-        await axios.delete(`http://localhost:8000/api/inquilinos/${id}/`);
+        await axios.delete(`http://localhost:8000/inquilinos/${id}/`);
         fetchInquilinos();
     };
 

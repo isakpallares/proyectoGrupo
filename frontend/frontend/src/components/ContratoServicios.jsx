@@ -18,7 +18,7 @@ function ContratoServicios() {
     }, []);
 
     const fetchContratos = async () => {
-        const response = await axios.get('http://localhost:8000/api/contratos-servicios/');
+        const response = await axios.get('http://localhost:8000/contratoServicios/');
         setContratos(response.data);
     };
 
@@ -32,10 +32,10 @@ function ContratoServicios() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (editing) {
-            await axios.put(`http://localhost:8000/api/contratos-servicios/${currentId}/`, contrato);
+            await axios.put(`http://localhost:8000/contratoServicios/${currentId}/`, contrato);
             setEditing(false);
         } else {
-            await axios.post('http://localhost:8000/api/contratos-servicios/', contrato);
+            await axios.post('http://localhost:8000/contratoServicios/', contrato);
         }
         fetchContratos();
         setContrato({ 
@@ -54,7 +54,7 @@ function ContratoServicios() {
     };
 
     const handleDelete = async (id) => {
-        await axios.delete(`http://localhost:8000/api/contratos-servicios/${id}/`);
+        await axios.delete(`http://localhost:8000/contratoServicios/${id}/`);
         fetchContratos();
     };
 

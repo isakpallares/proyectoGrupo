@@ -19,12 +19,12 @@ function UnidadList() {
     }, []);
 
     const fetchUnidades = async () => {
-        const response = await axios.get('http://localhost:8000/api/unidades/');
+        const response = await axios.get('http://localhost:8000/unidades/');
         setUnidades(response.data);
     };
 
     const fetchPropiedades = async () => {
-        const response = await axios.get('http://localhost:8000/api/propiedades/');
+        const response = await axios.get('http://localhost:8000/propiedades/');
         setPropiedades(response.data);
     };
 
@@ -38,10 +38,10 @@ function UnidadList() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (editing) {
-            await axios.put(`http://localhost:8000/api/unidades/${currentId}/`, unidad);
+            await axios.put(`http://localhost:8000/unidades/${currentId}/`, unidad);
             setEditing(false);
         } else {
-            await axios.post('http://localhost:8000/api/unidades/', unidad);
+            await axios.post('http://localhost:8000/unidades/', unidad);
         }
         fetchUnidades();
         setUnidad({ 
@@ -59,7 +59,7 @@ function UnidadList() {
     };
 
     const handleDelete = async (id) => {
-        await axios.delete(`http://localhost:8000/api/unidades/${id}/`);
+        await axios.delete(`http://localhost:8000/unidades/${id}/`);
         fetchUnidades();
     };
 

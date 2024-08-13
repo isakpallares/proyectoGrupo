@@ -19,12 +19,12 @@ function CuotaMantenimiento() {
     }, []);
 
     const fetchCuotas = async () => {
-        const response = await axios.get('http://localhost:8000/api/cuotas-mantenimiento/');
+        const response = await axios.get('http://localhost:8000/cuotaMantenimiento/');
         setCuotas(response.data);
     };
 
     const fetchUnidades = async () => {
-        const response = await axios.get('http://localhost:8000/api/unidades/');
+        const response = await axios.get('http://localhost:8000/unidades/');
         setUnidades(response.data);
     };
 
@@ -38,10 +38,10 @@ function CuotaMantenimiento() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (editing) {
-            await axios.put(`http://localhost:8000/api/cuotas-mantenimiento/${currentId}/`, cuota);
+            await axios.put(`http://localhost:8000/cuotaMantenimiento/${currentId}/`, cuota);
             setEditing(false);
         } else {
-            await axios.post('http://localhost:8000/api/cuotas-mantenimiento/', cuota);
+            await axios.post('http://localhost:8000/cuotaMantenimiento/', cuota);
         }
         fetchCuotas();
         setCuota({ 
@@ -59,7 +59,7 @@ function CuotaMantenimiento() {
     };
 
     const handleDelete = async (id) => {
-        await axios.delete(`http://localhost:8000/api/cuotas-mantenimiento/${id}/`);
+        await axios.delete(`http://localhost:8000/cuotaMantenimiento/${id}/`);
         fetchCuotas();
     };
 

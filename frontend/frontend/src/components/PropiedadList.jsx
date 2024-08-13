@@ -7,7 +7,7 @@ function PropiedadList() {
     const [propiedad, setPropiedad] = useState({ 
         direccion: '', 
         numero_pisos: '', 
-        numero_unidades: '', 
+        numero_unidades: '',
         año_construcción: '', 
         nombre_edificio: '' 
     });
@@ -19,7 +19,7 @@ function PropiedadList() {
     }, []);
 
     const fetchPropiedades = async () => {
-        const response = await axios.get('http://localhost:8000/api/propiedades/');
+        const response = await axios.get('http://localhost:8000/propiedades/');
         setPropiedades(response.data);
     };
 
@@ -33,10 +33,10 @@ function PropiedadList() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (editing) {
-            await axios.put(`http://localhost:8000/api/propiedades/${currentId}/`, propiedad);
+            await axios.put(`http://localhost:8000/propiedades/${currentId}/`, propiedad);
             setEditing(false);
         } else {
-            await axios.post('http://localhost:8000/api/propiedades/', propiedad);
+            await axios.post('http://localhost:8000/propiedades/', propiedad);
         }
         fetchPropiedades();
         setPropiedad({ 
@@ -55,7 +55,7 @@ function PropiedadList() {
     };
 
     const handleDelete = async (id) => {
-        await axios.delete(`http://localhost:8000/api/propiedades/${id}/`);
+        await axios.delete(`http://localhost:8000/propiedades/${id}/`);
         fetchPropiedades();
     };
 
