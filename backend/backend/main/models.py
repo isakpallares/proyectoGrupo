@@ -15,7 +15,7 @@ class Propiedad(models.Model):
 class Unidad(models.Model):
     propiedad = models.ForeignKey(Propiedad, on_delete=models.CASCADE)
     numero_unidad = models.CharField(max_length=50)
-    tipo_unidad = models.CharField(max_length=50)  # Ejemplo: apartamento, oficina, etc.
+    tipo_unidad = models.CharField(max_length=50)
     area = models.FloatField()
 
     def __str__(self):
@@ -23,7 +23,7 @@ class Unidad(models.Model):
 
 # Modelo para Propietarios
 class Propietario(models.Model):
-
+    unidad = models.ForeignKey(Unidad, on_delete=models.CASCADE,null=True, blank=True)
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
     documento_identidad = models.CharField(max_length=50, unique=True)

@@ -9,7 +9,7 @@ class PropiedadSerializer(serializers.ModelSerializer):
 
 # Serializer para Unidad
 class UnidadSerializer(serializers.ModelSerializer):
-    propiedad = PropiedadSerializer(read_only=True)  # Anidar el serializer de Propiedad
+    propiedad = PropiedadSerializer(read_only=True)  
 
     class Meta:
         model = Unidad
@@ -17,13 +17,14 @@ class UnidadSerializer(serializers.ModelSerializer):
 
 # Serializer para Propietario
 class PropietarioSerializer(serializers.ModelSerializer):
+    unidad = UnidadSerializer(read_only=True)  
     class Meta:
         model = Propietario
         fields = '__all__'
 
 # Serializer para Inquilino
 class InquilinoSerializer(serializers.ModelSerializer):
-    unidad = UnidadSerializer(read_only=True)  # Anidar el serializer de Unidad
+    unidad = UnidadSerializer(read_only=True)  
 
     class Meta:
         model = Inquilino
@@ -45,8 +46,8 @@ class GastoComunSerializer(serializers.ModelSerializer):
 
 # Serializer para Pago
 class PagoSerializer(serializers.ModelSerializer):
-    cuota = CuotaMantenimientoSerializer(read_only=True)  # Anidar el serializer de CuotaMantenimiento
-    propietario = PropietarioSerializer(read_only=True)  # Anidar el serializer de Propietario
+    cuota = CuotaMantenimientoSerializer(read_only=True)  
+    propietario = PropietarioSerializer(read_only=True)  
 
     class Meta:
         model = Pago
