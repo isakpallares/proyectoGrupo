@@ -25,7 +25,7 @@ class Unidad(models.Model):
 class Propietario(models.Model):
     unidad = models.ForeignKey(Unidad, on_delete=models.CASCADE,null=True, blank=True)
     nombre = models.CharField(max_length=100)
-    apellido = models.CharField(max_length=100)
+    apellido = models.CharField(max_length=100)              #DEUDA: Hacer un bool si todavia tiene deuda de un pago o no.
     documento_identidad = models.CharField(max_length=50, unique=True)
     telefono = models.CharField(max_length=20)
     email = models.EmailField()
@@ -52,7 +52,7 @@ class CuotaMantenimiento(models.Model):
     fecha = models.DateField()
     monto = models.DecimalField(max_digits=10, decimal_places=2)
     estado = models.CharField(max_length=20, choices=[('pagada', 'Pagada'), ('pendiente', 'Pendiente')])
-
+# remover estado y pasarlo a propietario
     def __str__(self):
         return f'Cuota {self.id} - {self.unidad.numero_unidad}'
 
@@ -61,7 +61,7 @@ class GastoComun(models.Model):
     fecha = models.DateField()
     descripcion = models.CharField(max_length=255)
     monto = models.DecimalField(max_digits=10, decimal_places=2)
-
+ #eliminar este modelo
     def __str__(self):
         return f'Gasto {self.id} - {self.descripcion}'
 
