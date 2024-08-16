@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Propiedad, Unidad, Propietario, Inquilino, CuotaMantenimiento, GastoComun, Pago, ContratoServicio
+from .models import Propiedad, Unidad, Inquilino, CuotaMantenimiento, Pago, ContratoServicio, Ingreso, Registro
 
 # Registro del modelo Propiedad
 @admin.register(Propiedad)
@@ -17,20 +17,12 @@ class UnidadAdmin(admin.ModelAdmin):
     list_filter = ('tipo_unidad', 'propiedad')
     ordering = ('propiedad', 'numero_unidad')
 
-# Registro del modelo Propietario
-@admin.register(Propietario)
-class PropietarioAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'apellido', 'documento_identidad', 'telefono', 'email')
-    search_fields = ('nombre', 'apellido', 'numero_documento_identidad')
-    list_filter = ('apellido',)
-    ordering = ('apellido', 'nombre')
 
 # Registro del modelo Inquilino
 @admin.register(Inquilino)
 class InquilinoAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'apellido', 'numero_documento_identidad', 'telefono', 'email', 'unidad')
-    search_fields = ('nombre', 'apellido', 'numero_documento_identidad', 'unidad__numero_unidad')
-    list_filter = ('unidad',)
+    list_display = ('nombre', 'apellido', 'documento_identidad', 'telefono', 'email', 'unidad')
+    search_fields = ('nombre', 'apellido', 'documento_identidad', 'unidad__numero_unidad')
     ordering = ('unidad', 'apellido', 'nombre')
 
 # Registro del modelo CuotaMantenimiento
@@ -41,19 +33,12 @@ class CuotaMantenimientoAdmin(admin.ModelAdmin):
     list_filter = ('estado', 'fecha')
     ordering = ('-fecha', 'unidad')
 
-# Registro del modelo GastoComun
-@admin.register(GastoComun)
-class GastoComunAdmin(admin.ModelAdmin):
-    list_display = ('fecha', 'descripcion', 'monto')
-    search_fields = ('descripcion',)
-    list_filter = ('fecha',)
-    ordering = ('-fecha',)
 
 # Registro del modelo Pago
 @admin.register(Pago)
 class PagoAdmin(admin.ModelAdmin):
-    list_display = ('cuota', 'propietario', 'fecha', 'monto')
-    search_fields = ('cuota__unidad__numero_unidad', 'propietario__nombre', 'propietario__apellido')
+    list_display = ('cuota', 'inquilino', 'fecha', 'monto', 'contratoServicio')
+    search_fields = ('cuota__unidad__numero_unidad', 'inquilino__nombre', 'inquilino__apellido')
     list_filter = ('fecha',)
     ordering = ('-fecha', 'cuota')
 
@@ -64,3 +49,17 @@ class ContratoServicioAdmin(admin.ModelAdmin):
     search_fields = ('proveedor', 'tipo_servicio')
     list_filter = ('tipo_servicio', 'fecha_inicio', 'fecha_fin')
     ordering = ('-fecha_inicio', 'proveedor')
+
+@admin.register(Ingreso)
+class IngresoAdmin(admin.ModelAdmin):
+    list_display = ('usuario', 'contraseña')
+    search_fields = ['usuario']
+    list_filter = ['usuario']
+    ordering = ['usuario']
+
+@admin.register(Registro)
+class RegistroAdmin(admin.ModelAdmin):
+    list_display = ('usuario', 'contraseña', 'email')
+    search_fields = ['usuario']
+    list_filter = ['usuario']
+    ordering = ['usuario']
