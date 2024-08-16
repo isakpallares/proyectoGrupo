@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Propiedad, Unidad, Inquilino, CuotaMantenimiento, Pago, ContratoServicio
+from .models import Propiedad, Unidad, Propietario, CuotaMantenimiento, Pago, ContratoServicio
 
 # Serializer para Propiedad
 class PropiedadSerializer(serializers.ModelSerializer):
@@ -16,11 +16,11 @@ class UnidadSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 # Serializer para Inquilino
-class InquilinoSerializer(serializers.ModelSerializer):
+class PropietarioSerializer(serializers.ModelSerializer):
     unidad = UnidadSerializer(read_only=True)  
 
     class Meta:
-        model = Inquilino
+        model = Propietario
         fields = '__all__'
 
 # Serializer para CuotaMantenimiento
@@ -31,7 +31,6 @@ class CuotaMantenimientoSerializer(serializers.ModelSerializer):
         model = CuotaMantenimiento
         fields = '__all__'
 
-
 # Serializer para ContratoServicio
 class ContratoServicioSerializer(serializers.ModelSerializer):
     class Meta:
@@ -41,7 +40,7 @@ class ContratoServicioSerializer(serializers.ModelSerializer):
 # Serializer para Pago
 class PagoSerializer(serializers.ModelSerializer):
     cuota = CuotaMantenimientoSerializer(read_only=True)  
-    inquilino = InquilinoSerializer(read_only=True)  
+    inquilino = PropietarioSerializer(read_only=True)  
     contrato_servicios = ContratoServicioSerializer(read_only=True)
 
     class Meta:

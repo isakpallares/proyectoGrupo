@@ -22,7 +22,7 @@ class Unidad(models.Model):
         return f'{self.numero_unidad} - {self.propiedad.nombre_edificio}'
 
 # Modelo para Inquilinos
-class Inquilino(models.Model):
+class Propietario(models.Model):
     unidad = models.ForeignKey(Unidad, on_delete=models.CASCADE)
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
@@ -39,8 +39,7 @@ class CuotaMantenimiento(models.Model):
     unidad = models.ForeignKey(Unidad, on_delete=models.CASCADE)
     fecha = models.DateField()
     monto = models.DecimalField(max_digits=10, decimal_places=2)
-    estado = models.CharField(max_length=20, choices=[('pagada', 'Pagada'), ('pendiente', 'Pendiente')])
-
+    estado = models.BooleanField(default=False)
     def __str__(self):
         return f'Cuota {self.unidad.numero_unidad}'
 
@@ -51,20 +50,20 @@ class ContratoServicio(models.Model):
     fecha_inicio = models.DateField()
     fecha_fin = models.DateField()
     monto = models.DecimalField(max_digits=10, decimal_places=2)
-
+    estado = models.BooleanField(default=False)
     def __str__(self):
         return f'Contrato {self.id} - {self.tipo_servicio}'
     
 # Modelo para Pagos
 class Pago(models.Model):
-    cuota = models.ForeignKey(CuotaMantenimiento, on_delete=models.CASCADE)
+    cuota = models.ForeignKey(CuotaMantenimiento, on_delete=models.CASCADE, blank=True, null=True)
     contratoServicio = models.ForeignKey(ContratoServicio, on_delete=models.CASCADE, blank=True, null=True)
-    inquilino = models.ForeignKey(Inquilino, on_delete=models.CASCADE, blank=True, null=True )
+    propietario = models.ForeignKey(Propietario, on_delete=models.CASCADE, blank=True, null=True )
     fecha = models.DateField()
     monto = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):
-        return f'Pago {self.id} - {self.cuota.unidad.numero_unidad}'
+        return f'Pago {self.id}'
 
 class Ingreso(models.Model):
     usuario = models.CharField(max_length = 255)

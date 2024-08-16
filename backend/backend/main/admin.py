@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Propiedad, Unidad, Inquilino, CuotaMantenimiento, Pago, ContratoServicio, Ingreso, Registro
+from .models import Propiedad, Unidad, Propietario, CuotaMantenimiento, Pago, ContratoServicio, Ingreso, Registro
 
 # Registro del modelo Propiedad
 @admin.register(Propiedad)
@@ -19,8 +19,8 @@ class UnidadAdmin(admin.ModelAdmin):
 
 
 # Registro del modelo Inquilino
-@admin.register(Inquilino)
-class InquilinoAdmin(admin.ModelAdmin):
+@admin.register(Propietario)
+class PropietarioAdmin(admin.ModelAdmin):
     list_display = ('nombre', 'apellido', 'documento_identidad', 'telefono', 'email', 'unidad')
     search_fields = ('nombre', 'apellido', 'documento_identidad', 'unidad__numero_unidad')
     ordering = ('unidad', 'apellido', 'nombre')
@@ -37,15 +37,15 @@ class CuotaMantenimientoAdmin(admin.ModelAdmin):
 # Registro del modelo Pago
 @admin.register(Pago)
 class PagoAdmin(admin.ModelAdmin):
-    list_display = ('cuota', 'inquilino', 'fecha', 'monto', 'contratoServicio')
-    search_fields = ('cuota__unidad__numero_unidad', 'inquilino__nombre', 'inquilino__apellido')
+    list_display = ('cuota', 'propietario', 'fecha', 'monto', 'contratoServicio')
+    search_fields = ('cuota__unidad__numero_unidad', 'propietario__nombre', 'propietario__apellido')
     list_filter = ('fecha',)
     ordering = ('-fecha', 'cuota')
 
 # Registro del modelo ContratoServicio
 @admin.register(ContratoServicio)
 class ContratoServicioAdmin(admin.ModelAdmin):
-    list_display = ('proveedor', 'tipo_servicio', 'fecha_inicio', 'fecha_fin', 'monto')
+    list_display = ('proveedor', 'tipo_servicio', 'fecha_inicio', 'fecha_fin', 'monto', 'estado')
     search_fields = ('proveedor', 'tipo_servicio')
     list_filter = ('tipo_servicio', 'fecha_inicio', 'fecha_fin')
     ordering = ('-fecha_inicio', 'proveedor')
