@@ -1,8 +1,14 @@
 from rest_framework import serializers
-from .models import Propiedad, Unidad, Propietario, CuotaMantenimiento, Pago, ContratoServicio
+from .models import Propiedad, Unidad, Propietario, CuotaMantenimiento, Pago, ContratoServicio, Presupuesto
 
 # Serializer para Propiedad
 class PropiedadSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Propiedad
+        fields = '__all__'
+
+# Serializer para Presupuesto
+class PresupuestoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Propiedad
         fields = '__all__'

@@ -2,8 +2,8 @@ from rest_framework import viewsets, status
 from rest_framework.views import APIView
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
-from .models import Propiedad, Unidad, Propietario, CuotaMantenimiento, Pago, ContratoServicio
-from .serializers import PropiedadSerializer, UnidadSerializer, PropietarioSerializer, CuotaMantenimientoSerializer,  PagoSerializer, ContratoServicioSerializer
+from .models import Propiedad, Unidad, Propietario, CuotaMantenimiento, Pago, ContratoServicio, Presupuesto
+from .serializers import PropiedadSerializer, UnidadSerializer, PropietarioSerializer, CuotaMantenimientoSerializer,  PagoSerializer, ContratoServicioSerializer, PresupuestoSerializer
 
 
 # ViewSet para Propiedad
@@ -15,6 +15,12 @@ class PropiedadViewSet(viewsets.ModelViewSet):
         if Propiedad.objects.filter(nombre_edificio=nombre_edificio).exists():
             raise ValidationError("Ya existe esta propiedad.")
         serializer.save()
+
+class PresupuestoViewSet(viewsets.ModelViewSet):
+    queryset = Presupuesto.objects.all()
+    serializer_class = PresupuestoSerializer
+    
+    
 
 # ViewSet para Unidad
 class UnidadViewSet(viewsets.ModelViewSet):

@@ -2,6 +2,7 @@ from django.db import models
 
 # Modelo para Propiedades
 class Propiedad(models.Model):
+
     direccion = models.CharField(max_length=255)
     numero_pisos = models.PositiveIntegerField()
     numero_unidades = models.PositiveIntegerField()
@@ -10,13 +11,19 @@ class Propiedad(models.Model):
 
     def __str__(self):
         return self.nombre_edificio
+    
+# Modelo para presupuesto
+class Presupuesto(models.Model):
+    propiedad = models.ForeignKey(Propiedad, on_delete=models.CASCADE)
+    año = models.DateField()
+    presupuesto = models.DecimalField(max_digits=10, decimal_places=2)
 
 # Modelo para Unidades
 class Unidad(models.Model):
     propiedad = models.ForeignKey(Propiedad, on_delete=models.CASCADE)
     numero_unidad = models.CharField(max_length=50)
     tipo_unidad = models.CharField(max_length=50)
-    area = models.FloatField()
+    coeficiente = models.DecimalField(max_digits=5, decimal_places=2, default=10.00)
 
     def __str__(self):
         return f'{self.numero_unidad} - {self.propiedad.nombre_edificio}'

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Propiedad, Unidad, Propietario, CuotaMantenimiento, Pago, ContratoServicio, Ingreso, Registro
+from .models import Propiedad, Unidad, Propietario, CuotaMantenimiento, Pago, ContratoServicio, Ingreso, Registro, Presupuesto
 
 # Registro del modelo Propiedad
 @admin.register(Propiedad)
@@ -9,10 +9,17 @@ class PropiedadAdmin(admin.ModelAdmin):
     list_filter = ('año_construcción',)
     ordering = ('nombre_edificio',)
 
+@admin.register(Presupuesto)
+class PresupuestoAdmin(admin.ModelAdmin):
+    list_display = ('propiedad','año','presupuesto')
+    search_fields = ('año', 'presupuesto',)
+    list_filter = ['año',]
+    ordering = ['año',]
+
 # Registro del modelo Unidad
 @admin.register(Unidad)
 class UnidadAdmin(admin.ModelAdmin):
-    list_display = ('numero_unidad', 'tipo_unidad', 'area', 'propiedad')
+    list_display = ('numero_unidad', 'tipo_unidad', 'propiedad','coeficiente')
     search_fields = ('numero_unidad', 'propiedad__nombre_edificio')
     list_filter = ('tipo_unidad', 'propiedad')
     ordering = ('propiedad', 'numero_unidad')
