@@ -1,6 +1,5 @@
-import React from "react";
 import Sidebar from "../components/Sidebar";
-import Header from "../components/Header";
+
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -127,22 +126,22 @@ function DashboardPage() {
                   {/* Tarjeta 1 */}
                   <div className="bg-white rounded-lg p-6 shadow-md">
                     <h3 className="text-xl font-semibold mb-4">
-                      Número Importante 1
+                      Presupuesto
                     </h3>
-                    <p className="text-4xl font-bold mb-4">$700.000.000</p>
+                    <p className="text-4xl font-bold mb-4">$76.000.000</p>
                     <p className="text-sm text-gray-500">
-                      Descripción breve del número 1.
+                      Presupuesto para el año en curso
                     </p>
                   </div>
 
                   {/* Tarjeta 2 */}
                   <div className="bg-white rounded-lg p-6 shadow-md">
                     <h3 className="text-xl font-semibold mb-4">
-                      Número Importante 2
+                      Apartamentos
                     </h3>
-                    <p className="text-4xl font-bold mb-4">456</p>
+                    <p className="text-4xl font-bold mb-4">336</p>
                     <p className="text-sm text-gray-500">
-                      Descripción breve del número 2.
+                      Cantidad que tiene esta Propiedad
                     </p>
                   </div>
 

@@ -54,9 +54,9 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
 ]
-
+ 
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000',  # La URL de tu frontend React en desarrollo
+    'http://localhost:5173/',  # La URL de tu frontend React en desarrollo
 ]
 
 ROOT_URLCONF = 'backend.urls'
