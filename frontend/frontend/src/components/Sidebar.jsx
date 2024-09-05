@@ -17,8 +17,15 @@ const Sidebar = () => {
   React.useEffect(() => {
     const pathname = location.pathname;
 
-    const section = pathname.substring(1);
-    setSelectedItem(section);
+    if (pathname.includes("finanzas")) {
+      setSelectedItem("finanzas");
+    } else if (pathname.includes("admin")) {
+      setSelectedItem("admin");
+    } else if (pathname.includes("dashboard")) {
+      setSelectedItem("dashboard");
+    } else if (pathname.includes("contacto")) {
+      setSelectedItem("contacto");
+    }
   }, [location]);
 
   return (
@@ -29,7 +36,7 @@ const Sidebar = () => {
           <li
             className={`menuItem cursor-pointer ${
               selectedItem === "dashboard"
-                ? "bg-oscuro shadow-2xl text-white "
+                ? "bg-oscuro shadow-2xl text-white"
                 : ""
             }`}
           >
@@ -54,7 +61,7 @@ const Sidebar = () => {
                 : ""
             }`}
           >
-            <Link to="/finanzas" className="">
+            <Link to="/finanzas/pagos" className="">
               <img
                 src={
                   selectedItem === "finanzas" ? finanzasBlanco : finanzasNegro
@@ -71,7 +78,7 @@ const Sidebar = () => {
               selectedItem === "admin" ? "bg-oscuro shadow-2xl text-white" : ""
             }`}
           >
-            <Link to="/admin" className="">
+            <Link to="/admin/propiedades" className="">
               <img
                 src={selectedItem === "admin" ? adminBlanco : adminNegro}
                 alt="Administración"

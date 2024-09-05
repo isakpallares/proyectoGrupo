@@ -1,16 +1,17 @@
 import Sidebar from "../components/Sidebar";
-import Header from "../components/Header";
+import HeaderFinanzas from "../components/HeaderFinanzas.jsx";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import DashboardPage from "../pages/DashboardPage";
 import "../App.css";
 
-function FinanzasPage() {
+function PagosPage() {
   return (
     <div className="flex m-0">
       <Sidebar />
-      <Header />
+      <HeaderFinanzas />
       <Routes></Routes>
     </div>
   );
 }
 
-export default FinanzasPage;
+export default PagosPage;

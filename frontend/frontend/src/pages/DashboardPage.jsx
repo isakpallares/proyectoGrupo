@@ -1,6 +1,5 @@
 import React from "react";
 import Sidebar from "../components/Sidebar";
-import Header from "../components/Header";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -119,11 +118,11 @@ function DashboardPage() {
             <h1 className="text-5xl font-bold mb-4 mt-3 ml-8">Bienvenido!</h1>
             <p className="ml-8 text-xl">Nos alegra que estés aquí.</p>
 
-            <div className="bg-gray-100 p-4 mt-8">
+            <div className="bg-gray-100 p-4 mt-">
               <div className="max-w-9xl ml-5">
                 <h2 className="text-xl font-bold mb-6">Resumen</h2>
 
-                <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-5 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-4 gap-8">
                   {/* Tarjeta 1 */}
                   <div className="bg-white rounded-lg p-6 shadow-md">
                     <h3 className="text-xl font-semibold mb-4">
@@ -168,15 +167,7 @@ function DashboardPage() {
                     </p>
                   </div>
 
-                  <div className="bg-white rounded-lg p-6 shadow-md">
-                    <h3 className="text-xl font-semibold mb-4">
-                      Número Importante 4
-                    </h3>
-                    <p className="text-4xl font-bold mb-4">1011</p>
-                    <p className="text-sm text-gray-500">
-                      Descripción breve del número 4.
-                    </p>
-                  </div>
+                 
                 </div>
 
                 {/* Espacio para tablas y gráficos */}

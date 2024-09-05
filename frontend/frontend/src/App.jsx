@@ -1,7 +1,8 @@
 import DashboardPage from "./pages/DashboardPage";
-import FinanzasPage from "./pages/FinanzasPage";
+import PagosPage from "./pages/PagosPage";
 import LoginPage from "./pages/LoginPage";
-import AdminPage from "./pages/AdminPage";
+import PropiedadesPage from "./pages/PropiedadesPage";
+import UsuariosPage from "./pages/UsuariosPage";
 import ContactoPage from "./pages/ContactoPage";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import "./App.css";
@@ -12,9 +13,10 @@ function App() {
       <Routes>
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/" element={<LoginPage />} />
-        <Route path="/finanzas" element={<FinanzasPage />} />
-        <Route path="/admin" element={<AdminPage />} />
+        <Route path="/admin/propiedades" element={<PropiedadesPage />} />
+        <Route path="/admin/usuarios" element={<UsuariosPage />} />
         <Route path="/contacto" element={<ContactoPage />} />
+        <Route path="/finanzas/pagos" element={<PagosPage />} />
       </Routes>
     </Router>
   );
