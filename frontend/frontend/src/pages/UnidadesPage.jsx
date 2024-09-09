@@ -135,16 +135,16 @@ function PropiedadesPage() {
           <HeaderAdmin />
           <main className="ml-44 bg-gray-100 pt-8 pb-40">
             <h1 className="text-3xl font-bold mb-4 mt-3 ml-8">
-              Manejo de Propiedades
+              Manejo de Unidades
             </h1>
             <p className="ml-8 text-xl">
-              Aquí puedes crear, actualizar, eliminar y ver tus propiedades.
+              Aquí puedes administrar las unidades de tus propiedades.
             </p>
 
             <div className="ml-8 mt-6 flex flex-col items-center space-y-6 w-11/12">
               <hr className="my-8 border-t-2 border-gray-300 w-3/4" />
               <h2 className="text-2xl font-bold mt-4">
-                Añadir Nueva Propiedad
+                Digite el ID de la propiedad
               </h2>
               <div className="flex flex-col space-y-4 w-full max-w-2xl  h-96">
                 <input
@@ -155,39 +155,7 @@ function PropiedadesPage() {
                   onChange={handleInputChangeAñadir}
                   className="px-4 py-2 border rounded mb-2 focus:outline-none focus:ring-2 focus:ring-oscuro focus:border-oscuro"
                 />
-                <input
-                  type="text"
-                  name="direccion"
-                  placeholder="Dirección"
-                  value={newPropiedad.direccion}
-                  onChange={handleInputChangeAñadir}
-                  className="px-4 py-2 border rounded mb-2 focus:outline-none focus:ring-2 focus:ring-oscuro focus:border-oscuro"
-                />
-                <input
-                  type="number"
-                  name="pisos"
-                  placeholder="Número de Pisos"
-                  value={newPropiedad.pisos}
-                  onChange={handleInputChangeAñadir}
-                  className="px-4 py-2 border rounded mb-2 focus:outline-none focus:ring-2 focus:ring-oscuro focus:border-oscuro"
-                />
-                <input
-                  type="text"
-                  name="cuota"
-                  placeholder="Cuota"
-                  value={newPropiedad.cuota}
-                  onChange={handleInputChangeAñadir}
-                  className="px-4 py-2 border rounded mb-2 focus:outline-none focus:ring-2 focus:ring-oscuro focus:border-oscuro"
-                />
-                {/* Nuevo campo de Unidades */}
-                <input
-                  type="number"
-                  name="unidades"
-                  placeholder="Número de Unidades"
-                  value={newPropiedad.unidades}
-                  onChange={handleInputChangeAñadir}
-                  className="px-4 py-2 border rounded mb-2 focus:outline-none focus:ring-2 focus:ring-oscuro focus:border-oscuro"
-                />
+                
                 <br></br>
                 <button
                   className="mt-6 bg-oscuro hover:bg-medio text-white font-bold py-2 px-4 rounded self-center"

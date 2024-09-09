@@ -1,17 +1,28 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import iconUsuario from "../assets/iconUsuario.png";
 import logout from "../assets/logout.png";
 
 const Header = () => {
   const navigate = useNavigate();
+  const location = useLocation(); // Hook para obtener la ruta actual
+  const [selectedMenu, setSelectedMenu] = useState("");
+
+  // Esto asegura que el menú correcto esté seleccionado cuando la página cargue
+  useEffect(() => {
+    if (location.pathname.includes("propiedades")) {
+      setSelectedMenu("propiedades");
+    } else if (location.pathname.includes("unidades")) {
+      setSelectedMenu("unidades");
+    } else if (location.pathname.includes("usuarios")) {
+      setSelectedMenu("usuarios");
+    }
+  }, [location.pathname]);
 
   const handleLogout = () => {
-    //lógica de logout
     navigate("/");
   };
 
-  const [selectedMenu, setSelectedMenu] = useState("home");
   const handleMenuClick = (menu) => {
     setSelectedMenu(menu);
   };
@@ -23,21 +34,28 @@ const Header = () => {
           <ul className="flex space-x-10 mt-4 ml-6">
             <li
               className={`cursor-pointer ${
-                selectedMenu === "home" ? "text-black underline" : ""
+                selectedMenu === "propiedades" ? "border-b-2 border-oscuro" : ""
               }`}
-              onClick={() => handleMenuClick("home")}
+              onClick={() => handleMenuClick("propiedades")}
             >
               <Link to="/admin/propiedades">Propiedades</Link>
             </li>
             <li
               className={`cursor-pointer ${
-                selectedMenu === "about" ? "text-black underline" : ""
+                selectedMenu === "unidades" ? "border-b-2 border-oscuro " : ""
               }`}
-              onClick={() => handleMenuClick("about")}
+              onClick={() => handleMenuClick("usuarios")}
+            >
+              <Link to="/admin/unidades">Unidades</Link>
+            </li>
+            <li
+              className={`cursor-pointer ${
+                selectedMenu === "usuarios" ? "border-b-2 border-oscuro " : ""
+              }`}
+              onClick={() => handleMenuClick("usuarios")}
             >
               <Link to="/admin/usuarios">Usuarios</Link>
             </li>
-                    
           </ul>
         </nav>
       </div>
