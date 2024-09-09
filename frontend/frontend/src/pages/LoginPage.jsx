@@ -39,7 +39,7 @@ const Login = () => {
                 placeholder="example@gmail.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:shadow-outline bg-gray-200 shadow-md"
+                className="w-full px-3 py-2 border border-gray-300 rounded focus:shadow-outline bg-gray-200 shadow-md focus:outline-none focus:ring-2 focus:ring-oscuro focus:border-oscuro"
                 required
               />
             </div>
@@ -56,7 +56,7 @@ const Login = () => {
                 placeholder="*********"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:shadow-outline bg-gray-200 shadow-md"
+                className="w-full px-3 py-2 border border-gray-300 rounded focus:shadow-outline bg-gray-200 shadow-md focus:outline-none focus:ring-2 focus:ring-oscuro focus:border-oscuro"
                 required
               />
             </div>

@@ -3,7 +3,7 @@ import Sidebar from "../components/Sidebar.jsx";
 import HeaderAdmin from "../components/HeaderAdmin.jsx";
 import "../App.css";
 
-function PropiedadesPage() {
+function UnidadesPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [propiedades, setPropiedades] = useState([
     {
@@ -12,7 +12,7 @@ function PropiedadesPage() {
       direccion: "123 Calle Principal",
       pisos: 3,
       cuota: "$2000",
-      unidades: 10, // Nueva propiedad con unidades
+      unidades: 10,
     },
     {
       id: 2,
@@ -20,112 +20,80 @@ function PropiedadesPage() {
       direccion: "456 Avenida Secundaria",
       pisos: 5,
       cuota: "$3000",
-      unidades: 20, // Nueva propiedad con unidades
+      unidades: 20,
     },
-    {
-      id: 3,
-      nombre: "Propiedad 3",
-      direccion: "456 Avenida Secundaria",
-      pisos: 5,
-      cuota: "$3000",
-      unidades: 20, // Nueva propiedad con unidades
-    },
-    {
-      id: 4,
-      nombre: "Propiedad 4",
-      direccion: "456 Avenida Secundaria",
-      pisos: 5,
-      cuota: "$3000",
-      unidades: 20, // Nueva propiedad con unidades
-    },
-    {
-      id: 5,
-      nombre: "Propiedad 5",
-      direccion: "456 Avenida Secundaria",
-      pisos: 5,
-      cuota: "$3000",
-      unidades: 20, // Nueva propiedad con unidades
-    },
-
     // Más propiedades aquí...
   ]);
 
-  const [newPropiedad, setNewPropiedad] = useState({
-    id: "",
-    nombre: "",
-    direccion: "",
-    pisos: "",
-    cuota: "",
-    unidades: "", // Nuevo campo de unidades
-  });
+  const [unidades, setUnidades] = useState([
+    {
+      idPropiedad: 1,
+      numeroUnidad: "1",
+      nombreInquilino: "",
+      cedulaInquilino: "",
+      telefonoInquilino: "",
+      estado: "DISPONIBLE",
+      coeficiente: 1123,
+    },
+    {
+      idPropiedad: 2,
+      numeroUnidad: "2",
+      nombreInquilino: "Isak",
+      cedulaInquilino: 2,
+      telefonoInquilino: "2",
+      estado: "OCUPADA",
+      coeficiente: 2123,
+    },
+    {
+      idPropiedad: 1,
+      numeroUnidad: "3",
+      nombreInquilino: "",
+      cedulaInquilino: "",
+      telefonoInquilino: "",
+      estado: "DISPONIBLE",
+      coeficiente: 10000,
+    },
+    {
+      idPropiedad: 2,
+      numeroUnidad: "4",
+      nombreInquilino: "Dairo",
+      cedulaInquilino: 4,
+      telefonoInquilino: "4",
+      estado: "OCUPADA",
+      coeficiente: 23123,
+    },
+    // Más unidades aquí...
+  ]);
 
-  const filteredPropiedades = propiedades.filter((propiedad) =>
-    propiedad.nombre.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const [selectedPropiedadId, setSelectedPropiedadId] = useState(null);
 
-  const handleInputChangeAñadir = (e) => {
-    const { name, value } = e.target;
-    setNewPropiedad({ ...newPropiedad, [name]: value });
+  const handleSearch = () => {
+    setSelectedPropiedadId(searchTerm);
   };
 
-  const handleAddProperty = () => {
-    if (
-      newPropiedad.nombre &&
-      newPropiedad.direccion &&
-      newPropiedad.pisos &&
-      newPropiedad.cuota &&
-      newPropiedad.unidades // Verifica que el campo de unidades esté completado
-    ) {
-      const newId = propiedades.length + 1;
-      setPropiedades([...propiedades, { ...newPropiedad, id: newId }]);
-      setNewPropiedad({
-        id: "",
-        nombre: "",
-        direccion: "",
-        pisos: "",
-        cuota: "",
-        unidades: "", // Reiniciar campo de unidades
-      });
-    } else {
-      alert("Por favor, completa todos los campos.");
-    }
-  };
-
-  const [editPropiedadId, setEditPropiedadId] = useState(null);
-  const [editFormData, setEditFormData] = useState({
-    nombre: "",
-    direccion: "",
-    pisos: "",
-    cuota: "",
-    unidades: "",
-  });
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setEditFormData({ ...editFormData, [name]: value });
-  };
-
-  const handleEditClick = (propiedad) => {
-    setEditPropiedadId(propiedad.id);
-    setEditFormData({
-      nombre: propiedad.nombre,
-      direccion: propiedad.direccion,
-      pisos: propiedad.pisos,
-      cuota: propiedad.cuota,
-      unidades: propiedad.unidades,
-    });
-  };
-
-  const handleSaveClick = (id) => {
-    const updatedPropiedades = propiedades.map((propiedad) =>
-      propiedad.id === id ? { ...propiedad, ...editFormData } : propiedad
+  const handleChangeState = (numeroUnidad) => {
+    setUnidades((prevUnidades) =>
+      prevUnidades.map((unidad) =>
+        unidad.numeroUnidad === numeroUnidad
+          ? {
+              ...unidad,
+              estado: "OCUPADA",
+            }
+          : unidad
+      )
     );
-    setPropiedades(updatedPropiedades);
-    setEditPropiedadId(null); // Termina la edición
   };
 
-  const handleDelete = (id) => {
-    setPropiedades(propiedades.filter((propiedad) => propiedad.id !== id));
-  };
+  const unidadesDisponibles = unidades.filter(
+    (unidad) =>
+      unidad.idPropiedad === parseInt(selectedPropiedadId) &&
+      unidad.estado === "DISPONIBLE"
+  );
+  const unidadesOcupadas = unidades.filter(
+    (unidad) =>
+      unidad.idPropiedad === parseInt(selectedPropiedadId) &&
+      unidad.estado === "OCUPADA"
+  );
 
   return (
     <div className="flex flex-col h-screen">
@@ -146,159 +114,207 @@ function PropiedadesPage() {
               <h2 className="text-2xl font-bold mt-4">
                 Digite el ID de la propiedad
               </h2>
-              <div className="flex flex-col space-y-4 w-full max-w-2xl  h-96">
+              <div className="flex flex-col space-y-4 w-full max-w-2xl h-96">
                 <input
                   type="text"
-                  name="nombre"
-                  placeholder="Nombre de la Propiedad"
-                  value={newPropiedad.nombre}
-                  onChange={handleInputChangeAñadir}
+                  placeholder="ID de la Propiedad"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                   className="px-4 py-2 border rounded mb-2 focus:outline-none focus:ring-2 focus:ring-oscuro focus:border-oscuro"
                 />
-                
-                <br></br>
                 <button
                   className="mt-6 bg-oscuro hover:bg-medio text-white font-bold py-2 px-4 rounded self-center"
-                  onClick={handleAddProperty}
+                  onClick={handleSearch}
                 >
-                  Añadir Propiedad
+                  Buscar propiedad
                 </button>
               </div>
               <hr className="my-8 border-t-2 border-gray-300 w-3/4" />
             </div>
 
-            {/* Barra de búsqueda */}
+            {/* Tabla de Unidades Disponibles */}
             <div className="ml-8 mt-6 flex flex-col items-center space-y-6 w-11/12">
-              <input
-                type="text"
-                placeholder="Buscar propiedades..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="px-4 py-2 border rounded w-full max-w-2xl"
-              />
-              {/* Tabla con barra deslizadora */}
+              <h2 className="text-2xl font-bold">Unidades Disponibles</h2>
               <div className="w-3/4 mt-8">
                 <div className="max-h-[500px] overflow-y-auto">
-                  <table className="table-auto w-11/12 bg-white shadow-md rounded">
+                  <table className="table-auto w-full bg-white shadow-md rounded">
                     <thead>
                       <tr className="bg-gray-200 text-gray-700">
-                        <th className="px-4 py-2 text-center">ID</th>
-                        <th className="px-4 py-2 text-center">Nombre</th>
-                        <th className="px-4 py-2 text-center">Dirección</th>
-                        <th className="px-4 py-2 text-center">Pisos</th>
-                        <th className="px-4 py-2 text-center">Cuota</th>
-                        <th className="px-4 py-2 text-center">Unidades</th>{" "}
-                        {/* Nuevo campo */}
-                        <th className="px-4 py-2 text-center" colSpan={2}>
-                          Acciones
+                        <th className="px-4 py-2 text-center">ID Propiedad</th>
+                        <th className="px-4 py-2 text-center">
+                          Número de Unidad
                         </th>
+                        <th className="px-4 py-2 text-center">
+                          Nombre Inquilino
+                        </th>
+                        <th className="px-4 py-2 text-center">Cédula</th>
+                        <th className="px-4 py-2 text-center">Teléfono</th>
+                        <th className="px-4 py-2 text-center">Coeficiente</th>
+                        <th className="px-4 py-2 text-center">Acciones</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {filteredPropiedades.map((propiedad, index) => (
-                        <tr key={index} className="border-t border-gray-300">
-                          <td className="px-4 py-2 text-center">
-                            {propiedad.id}
-                          </td>
-                          <td className="px-4 py-2 text-center">
-                            {editPropiedadId === propiedad.id ? (
+                      {unidadesDisponibles.length > 0 ? (
+                        unidadesDisponibles.map((unidad, index) => (
+                          <tr key={index} className="border-t border-gray-300">
+                            <td className="px-4 py-2 text-center">
+                              {unidad.idPropiedad}
+                            </td>
+                            <td className="px-4 py-2 text-center">
+                              {unidad.numeroUnidad}
+                            </td>
+                            <td className="px-4 py-2 text-center">
                               <input
                                 type="text"
-                                name="nombre"
-                                value={editFormData.nombre}
-                                onChange={handleInputChange}
-                                className="border px-2"
+                                value={unidad.nombreInquilino}
+                                onChange={(e) =>
+                                  setUnidades((prevUnidades) =>
+                                    prevUnidades.map((u) =>
+                                      u.numeroUnidad === unidad.numeroUnidad
+                                        ? {
+                                            ...u,
+                                            nombreInquilino: e.target.value,
+                                          }
+                                        : u
+                                    )
+                                  )
+                                }
+                                className="px-2 py-1 border rounded"
                               />
-                            ) : (
-                              propiedad.nombre
-                            )}
-                          </td>
-                          <td className="px-4 py-2 text-center">
-                            {editPropiedadId === propiedad.id ? (
+                            </td>
+                            <td className="px-4 py-2 text-center">
                               <input
                                 type="text"
-                                name="direccion"
-                                value={editFormData.direccion}
-                                onChange={handleInputChange}
-                                className="border px-2"
+                                value={unidad.cedulaInquilino}
+                                onChange={(e) =>
+                                  setUnidades((prevUnidades) =>
+                                    prevUnidades.map((u) =>
+                                      u.numeroUnidad === unidad.numeroUnidad
+                                        ? {
+                                            ...u,
+                                            cedulaInquilino: e.target.value,
+                                          }
+                                        : u
+                                    )
+                                  )
+                                }
+                                className="px-2 py-1 border rounded"
                               />
-                            ) : (
-                              propiedad.direccion
-                            )}
-                          </td>
-                          <td className="px-4 py-2 text-center">
-                            {editPropiedadId === propiedad.id ? (
-                              <input
-                                type="number"
-                                name="pisos"
-                                value={editFormData.pisos}
-                                onChange={handleInputChange}
-                                className="border px-2"
-                              />
-                            ) : (
-                              propiedad.pisos
-                            )}
-                          </td>
-                          <td className="px-4 py-2 text-center">
-                            {editPropiedadId === propiedad.id ? (
+                            </td>
+                            <td className="px-4 py-2 text-center">
                               <input
                                 type="text"
-                                name="cuota"
-                                value={editFormData.cuota}
-                                onChange={handleInputChange}
-                                className="border px-2"
+                                value={unidad.telefonoInquilino}
+                                onChange={(e) =>
+                                  setUnidades((prevUnidades) =>
+                                    prevUnidades.map((u) =>
+                                      u.numeroUnidad === unidad.numeroUnidad
+                                        ? {
+                                            ...u,
+                                            telefonoInquilino: e.target.value,
+                                          }
+                                        : u
+                                    )
+                                  )
+                                }
+                                className="px-2 py-1 border rounded"
                               />
-                            ) : (
-                              propiedad.cuota
-                            )}
-                          </td>
-                          <td className="px-4 py-2 text-center">
-                            {editPropiedadId === propiedad.id ? (
-                              <input
-                                type="number"
-                                name="unidades"
-                                value={editFormData.unidades}
-                                onChange={handleInputChange}
-                                className="border px-2"
-                              />
-                            ) : (
-                              propiedad.unidades
-                            )}
-                          </td>
-                          <td className="px-4 py-2 text-center">
-                            {editPropiedadId === propiedad.id ? (
+                            </td>
+                            <td className="px-4 py-2 text-center">
+                              {unidad.coeficiente}
+                            </td>
+                            <td className="px-4 py-2 text-center">
                               <button
-                                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-                                onClick={() => handleSaveClick(propiedad.id)}
+                                onClick={() =>
+                                  handleChangeState(unidad.numeroUnidad)
+                                }
+                                className="text-green-500"
                               >
-                                Guardar
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  className="h-6 w-6"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M5 13l4 4L19 7"
+                                  />
+                                </svg>
                               </button>
-                            ) : (
-                              <button
-                                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2"
-                                onClick={() => handleEditClick(propiedad)}
-                              >
-                                Editar
-                              </button>
-                            )}
-                          </td>
-                          <td className="px-4 py-2">
-                            <button
-                              className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                              onClick={() => handleDelete(propiedad.id)}
-                            >
-                              Eliminar
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                      {filteredPropiedades.length === 0 && (
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
                         <tr>
                           <td
                             colSpan="7"
                             className="px-4 py-2 text-center text-gray-500"
                           >
-                            No se encontraron propiedades
+                            No hay unidades disponibles.
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            {/* Tabla de Unidades Ocupadas */}
+            <div className="ml-8 mt-6 flex flex-col items-center space-y-6 w-11/12">
+              <h2 className="text-2xl font-bold">Unidades Ocupadas</h2>
+              <div className="w-3/4 mt-8">
+                <div className="max-h-[500px] overflow-y-auto">
+                  <table className="table-auto w-full bg-white shadow-md rounded">
+                    <thead>
+                      <tr className="bg-gray-200 text-gray-700">
+                        <th className="px-4 py-2 text-center">ID Propiedad</th>
+                        <th className="px-4 py-2 text-center">
+                          Número de Unidad
+                        </th>
+                        <th className="px-4 py-2 text-center">
+                          Nombre Inquilino
+                        </th>
+                        <th className="px-4 py-2 text-center">Cédula</th>
+                        <th className="px-4 py-2 text-center">Teléfono</th>
+                        <th className="px-4 py-2 text-center">Coeficiente</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {unidadesOcupadas.length > 0 ? (
+                        unidadesOcupadas.map((unidad, index) => (
+                          <tr key={index} className="border-t border-gray-300">
+                            <td className="px-4 py-2 text-center">
+                              {unidad.idPropiedad}
+                            </td>
+                            <td className="px-4 py-2 text-center">
+                              {unidad.numeroUnidad}
+                            </td>
+                            <td className="px-4 py-2 text-center">
+                              {unidad.nombreInquilino}
+                            </td>
+                            <td className="px-4 py-2 text-center">
+                              {unidad.cedulaInquilino}
+                            </td>
+                            <td className="px-4 py-2 text-center">
+                              {unidad.telefonoInquilino}
+                            </td>
+                            <td className="px-4 py-2 text-center">
+                              {unidad.coeficiente}
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td
+                            colSpan="6"
+                            className="px-4 py-2 text-center text-gray-500"
+                          >
+                            No hay unidades ocupadas.
                           </td>
                         </tr>
                       )}
@@ -314,4 +330,4 @@ function PropiedadesPage() {
   );
 }
 
-export default PropiedadesPage;
+export default UnidadesPage;
