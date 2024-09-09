@@ -1,4 +1,5 @@
 import Sidebar from "../components/Sidebar";
+import axios from 'axios'; 
 
 import {
   Chart as ChartJS,
@@ -108,6 +109,31 @@ const optionsBarLine = {
 };
 
 function DashboardPage() {
+
+  const [dataPropiedades, setDataProp] = useState([]);
+  const [dataPagos, setDataPagos] = useState([]);
+
+  useEffect(() => {
+    axios.get('http://localhost:8000/api/propiedades/')
+      .then(response => {
+        setDataProp(response.dataPropiedades);
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+      });
+  }, []);
+
+  useEffect(() => {
+    axios.get('http://localhost:8000/api/pagos/')
+      .then(response => {
+        setDataPagos(response.dataPagos);
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+      });
+  }, []);
+
+
   return (
     <div className="flex flex-col h-screen">
       <div className="flex flex-1">

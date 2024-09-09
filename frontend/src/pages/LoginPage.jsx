@@ -2,11 +2,26 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import logoNegroN from "../assets/logoNegroN.png";
 
+
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const [dataUsuario, setDataUser] = useState([]);
+
+  useEffect(() => {
+    axios.get('http://localhost:8000/api/usuarios/')
+      .then(response => {
+        setDataUser(response.dataUsuario);
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+      });
+  }, []);
+
+
+
 
   const handleSubmit = async (event) => {
     event.preventDefault();
