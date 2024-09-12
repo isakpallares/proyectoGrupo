@@ -20,6 +20,14 @@ class Unidad(models.Model):
     estado = models.BooleanField(default=False)
     coeficiente = models.PositiveIntegerField()
     
+    def save(self, *args, **kwargs):
+        if self.id_propiedad:
+            presupuesto_anual = self.id_propiedad.Presupuesto
+            cuota = self.id_propiedad.cuota
+            self.coeficiente = (presupuesto_anual * cuota / 100) / 12
+
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f'{self.numero_unidad}'
 

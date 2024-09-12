@@ -10,9 +10,13 @@ class PropiedadSerializer(serializers.ModelSerializer):
 # Serializer para Unidad
 class UnidadSerializer(serializers.ModelSerializer):
     propiedad = PropiedadSerializer(read_only=True)  
+    
     class Meta:
         model = Unidad
         fields = '__all__'
+
+    def get_monto_mensual(self, obj):
+        return obj.monto_mensual()
 
 # Serializer para Pago
 class PagoSerializer(serializers.ModelSerializer):
