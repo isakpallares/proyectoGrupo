@@ -65,10 +65,15 @@ function UnidadesPage() {
     // Más unidades aquí...
   ]);
 
+  const [selectedPropiedad, setSelectedPropiedad] = useState(null);
   const [selectedPropiedadId, setSelectedPropiedadId] = useState(null);
 
   const handleSearch = () => {
+    const propiedad = propiedades.find(
+      (prop) => prop.id === parseInt(searchTerm)
+    );
     setSelectedPropiedadId(searchTerm);
+    setSelectedPropiedad(propiedad);
   };
 
   const handleChangeState = (numeroUnidad) => {
@@ -94,7 +99,28 @@ function UnidadesPage() {
       unidad.idPropiedad === parseInt(selectedPropiedadId) &&
       unidad.estado === "OCUPADA"
   );
-
+   const isUnidadValid = (unidad) => {
+     return (
+       unidad.nombreInquilino.trim() !== "" &&
+       unidad.cedulaInquilino.trim() !== "" &&
+       unidad.telefonoInquilino.trim() !== ""
+     );
+   };
+const handleSetAvailable = (numeroUnidad) => {
+  setUnidades((prevUnidades) =>
+    prevUnidades.map((unidad) =>
+      unidad.numeroUnidad === numeroUnidad
+        ? {
+            ...unidad,
+            estado: "DISPONIBLE",
+            nombreInquilino: "",
+            cedulaInquilino: "",
+            telefonoInquilino: "",
+          }
+        : unidad
+    )
+  );
+};
   return (
     <div className="flex flex-col h-screen">
       <div className="flex flex-1">
@@ -114,20 +140,40 @@ function UnidadesPage() {
               <h2 className="text-2xl font-bold mt-4">
                 Digite el ID de la propiedad
               </h2>
-              <div className="flex flex-col space-y-4 w-full max-w-2xl h-96">
+              <div className="flex flex-col space-y-4 w-full max-w-3xl h-96">
                 <input
                   type="text"
                   placeholder="ID de la Propiedad"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="px-4 py-2 border rounded mb-2 focus:outline-none focus:ring-2 focus:ring-oscuro focus:border-oscuro"
+                  className="px-4 py-2 w-1/4 text-center mx-auto border rounded mb-2 focus:outline-none focus:ring-2 focus:ring-oscuro focus:border-oscuro"
                 />
                 <button
                   className="mt-6 bg-oscuro hover:bg-medio text-white font-bold py-2 px-4 rounded self-center"
                   onClick={handleSearch}
                 >
                   Buscar propiedad
-                </button>
+                </button><br></br>
+                {/* Mostrar detalles de la propiedad */}
+                {selectedPropiedad && (
+                  <div className="mt-8 p-4 bg-white shadow-md w-5/12 rounded-lg mx-auto">
+                    <h3 className="text-xl font-bold  mb-2">
+                      Detalles de Propiedad
+                    </h3>
+                    <p>
+                      <strong>Nombre:</strong> {selectedPropiedad.nombre}
+                    </p>
+                    <p>
+                      <strong>Dirección:</strong> {selectedPropiedad.direccion}
+                    </p>
+                    <p>
+                      <strong>Pisos:</strong> {selectedPropiedad.pisos}
+                    </p>
+                    <p>
+                      <strong>Cuota:</strong> {selectedPropiedad.cuota}
+                    </p>
+                  </div>
+                )}
               </div>
               <hr className="my-8 border-t-2 border-gray-300 w-3/4" />
             </div>
@@ -228,6 +274,7 @@ function UnidadesPage() {
                                 onClick={() =>
                                   handleChangeState(unidad.numeroUnidad)
                                 }
+                                disabled={!isUnidadValid(unidad)}
                                 className="text-green-500"
                               >
                                 <svg
@@ -282,6 +329,7 @@ function UnidadesPage() {
                         <th className="px-4 py-2 text-center">Cédula</th>
                         <th className="px-4 py-2 text-center">Teléfono</th>
                         <th className="px-4 py-2 text-center">Coeficiente</th>
+                        <th className="px-4 py-2 text-center">Acciones</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -305,6 +353,29 @@ function UnidadesPage() {
                             </td>
                             <td className="px-4 py-2 text-center">
                               {unidad.coeficiente}
+                            </td>
+                            <td>
+                              <button
+                                onClick={() =>
+                                  handleSetAvailable(unidad.numeroUnidad)
+                                }
+                                className="text-red-500"
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  className="h-6 w-6"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M6 18L18 6M6 6l12 12"
+                                  />
+                                </svg>
+                              </button>
                             </td>
                           </tr>
                         ))
