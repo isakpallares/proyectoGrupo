@@ -62,6 +62,15 @@ function UnidadesPage() {
       estado: "OCUPADA",
       coeficiente: 23123,
     },
+    {
+      idPropiedad: 3,
+      numeroUnidad: "4",
+      nombreInquilino: "Dairo",
+      cedulaInquilino: 4,
+      telefonoInquilino: "4",
+      estado: "OCUPADA",
+      coeficiente: 23123,
+    },
     // Más unidades aquí...
   ]);
 
