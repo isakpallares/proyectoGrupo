@@ -22,14 +22,6 @@ function UnidadesPage() {
       cuota: "$3000",
       unidades: 20,
     },
-    {
-      id: 3,
-      nombre: "Propiedad 2",
-      direccion: "456 Avenida Secundaria",
-      pisos: 5,
-      cuota: "$3000",
-      unidades: 20,
-    },
     // Más propiedades aquí...
   ]);
 
