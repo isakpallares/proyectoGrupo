@@ -40,7 +40,18 @@ function FinanzasPage() {
       });
   }, []);
 
-
+  const crearPago = async (data) => {
+    try {
+      const response = await axios.post('http://localhost:8000/api/pagos/', data);
+      console.log('Pago creado:', response.data);
+    } catch (error) {
+      if (error.response && error.response.status === 400) {
+        alert(error.response.data.detail); 
+      } else {
+        alert('Ocurrió un error desconocido.');
+      }
+    }
+  };
   
   return (
     <div className="flex m-0">
