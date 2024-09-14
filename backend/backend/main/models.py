@@ -18,7 +18,7 @@ class Unidad(models.Model):
     cedula_inquilino = models.CharField(max_length=50, blank=True, null=True)
     telefono_inquilino = models.CharField(max_length=50, blank=True, null=True)
     estado = models.BooleanField(default=False)
-    coeficiente = models.PositiveIntegerField()
+    coeficiente = models.PositiveIntegerField(blank=True, null=True)
     
     def save(self, *args, **kwargs):
         if self.id_propiedad:
