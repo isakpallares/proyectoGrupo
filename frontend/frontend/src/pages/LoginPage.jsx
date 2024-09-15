@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { login } from "./services/loginService"; //Importe del servicio loginService.js
 import logoNegroN from "../assets/logoNegroN.png";
 
 const Login = () => {
@@ -12,13 +13,10 @@ const Login = () => {
     event.preventDefault();
 
     try {
-      if (email === "ale@gmail.com") {
-        navigate("/dashboard");
-      } else {
-        setError("Invalid email or password");
-      }
+      await login(email, password);
+      navigate("/dashboard");
     } catch (err) {
-      setError("An error occurred");
+      setError("Email o contraseña incorrectos");
     }
   };
 
@@ -44,10 +42,7 @@ const Login = () => {
               />
             </div>
             <div className="mb-4">
-              <label
-                htmlFor="password"
-                className="block text-gray-700 mb-4 mt-6"
-              >
+              <label htmlFor="password" className="block text-gray-700 mb-4 mt-6">
                 Password
               </label>
               <input
@@ -87,3 +82,4 @@ const Login = () => {
 };
 
 export default Login;
+
