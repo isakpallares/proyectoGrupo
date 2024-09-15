@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Propiedad, Unidad, Propietario, Inquilino, CuotaMantenimiento, GastoComun, Pago, ContratoServicio
+from .models import Propiedad, Unidad, Pago, Usuario
 
 # Serializer para Propiedad
 class PropiedadSerializer(serializers.ModelSerializer):
@@ -9,51 +9,24 @@ class PropiedadSerializer(serializers.ModelSerializer):
 
 # Serializer para Unidad
 class UnidadSerializer(serializers.ModelSerializer):
-    propiedad = PropiedadSerializer(read_only=True)  # Anidar el serializer de Propiedad
-
+    propiedad = PropiedadSerializer(read_only=True)  
+    
     class Meta:
         model = Unidad
         fields = '__all__'
 
-# Serializer para Propietario
-class PropietarioSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Propietario
-        fields = '__all__'
-
-# Serializer para Inquilino
-class InquilinoSerializer(serializers.ModelSerializer):
-    unidad = UnidadSerializer(read_only=True)  # Anidar el serializer de Unidad
-
-    class Meta:
-        model = Inquilino
-        fields = '__all__'
-
-# Serializer para CuotaMantenimiento
-class CuotaMantenimientoSerializer(serializers.ModelSerializer):
-    unidad = UnidadSerializer(read_only=True)  # Anidar el serializer de Unidad
-
-    class Meta:
-        model = CuotaMantenimiento
-        fields = '__all__'
-
-# Serializer para GastoComun
-class GastoComunSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = GastoComun
-        fields = '__all__'
+    def get_monto_mensual(self, obj):
+        return obj.monto_mensual()
 
 # Serializer para Pago
 class PagoSerializer(serializers.ModelSerializer):
-    cuota = CuotaMantenimientoSerializer(read_only=True)  # Anidar el serializer de CuotaMantenimiento
-    propietario = PropietarioSerializer(read_only=True)  # Anidar el serializer de Propietario
-
+    unidad = UnidadSerializer(read_only=True)  
+    propiedad = PropiedadSerializer(read_only=True)  
     class Meta:
         model = Pago
         fields = '__all__'
-
-# Serializer para ContratoServicio
-class ContratoServicioSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ContratoServicio
+        
+class  UsuarioSerializer(serializers.ModelSerializer):
+    class Meta: 
+        model = Usuario
         fields = '__all__'

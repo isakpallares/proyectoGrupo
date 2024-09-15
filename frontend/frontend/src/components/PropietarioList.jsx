@@ -19,11 +19,11 @@ function PropietarioList() {
     }, []);
 
     const fetchPropietarios = async () => {
-        const response = await axios.get('http://localhost:8000/api/propietarios/');
+        const response = await axios.get('http://localhost:8000/propietarios/');
         setPropietarios(response.data);
     };
 
-    const handleChange = (e) => {
+    const handleChange = (e) => {   
         setPropietario({
             ...propietario,
             [e.target.name]: e.target.value
@@ -33,7 +33,7 @@ function PropietarioList() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-          const responseHandle = await axios.post('/api/propietarios/', propietario);
+          const responseHandle = await axios.post('http://localhost:8000/propietarios/');
           setMensaje('Propietario creado exitosamente.');
           setPropietario({
             nombre: '',
@@ -59,7 +59,7 @@ function PropietarioList() {
     };
 
     const handleDelete = async (id) => {
-        await axios.delete(`http://localhost:8000/api/propietarios/${id}/`);
+        await axios.delete(`http://localhost:8000/propietarios/${id}/`);
         fetchPropietarios();
     };
 

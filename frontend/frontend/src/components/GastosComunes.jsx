@@ -16,7 +16,7 @@ function GastosComunes() {
     }, []);
 
     const fetchGastos = async () => {
-        const response = await axios.get('http://localhost:8000/api/gastos-comunes/');
+        const response = await axios.get('http://localhost:8000/gastosComunes/');
         setGastos(response.data);
     };
 
@@ -30,10 +30,10 @@ function GastosComunes() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (editing) {
-            await axios.put(`http://localhost:8000/api/gastos-comunes/${currentId}/`, gasto);
+            await axios.put(`http://localhost:8000/gastosComunes/${currentId}/`, gasto);
             setEditing(false);
         } else {
-            await axios.post('http://localhost:8000/api/gastos-comunes/', gasto);
+            await axios.post('http://localhost:8000/gastosComunes/', gasto);
         }
         fetchGastos();
         setGasto({ 
@@ -50,7 +50,7 @@ function GastosComunes() {
     };
 
     const handleDelete = async (id) => {
-        await axios.delete(`http://localhost:8000/api/gastos-comunes/${id}/`);
+        await axios.delete(`http://localhost:8000/gastosComunes/${id}/`);
         fetchGastos();
     };
 

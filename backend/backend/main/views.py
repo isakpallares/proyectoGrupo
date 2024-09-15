@@ -1,70 +1,65 @@
 from rest_framework import viewsets, status
 from rest_framework.views import APIView
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
-from .models import Propiedad, Unidad, Propietario, Inquilino, CuotaMantenimiento, GastoComun, Pago, ContratoServicio
-from .serializers import PropiedadSerializer, UnidadSerializer, PropietarioSerializer, InquilinoSerializer, CuotaMantenimientoSerializer, GastoComunSerializer, PagoSerializer, ContratoServicioSerializer
+from django.utils import timezone
+from .models import Propiedad, Unidad, Pago, Usuario
+from .serializers import PropiedadSerializer, UnidadSerializer,  PagoSerializer, UsuarioSerializer
 
 
 # ViewSet para Propiedad
 class PropiedadViewSet(viewsets.ModelViewSet):
     queryset = Propiedad.objects.all()
     serializer_class = PropiedadSerializer
+    def perform_create(self, serializer):
+        nombreEdificio = serializer.validated_data.get('numero_unidad',None)
+        if Propiedad.objects.filter(nombre_edificio=nombreEdificio).exists():
+            raise ValidationError("Ya existe esta propiedad.")
+        serializer.save()
 
 # ViewSet para Unidad
 class UnidadViewSet(viewsets.ModelViewSet):
     queryset = Unidad.objects.all()
     serializer_class = UnidadSerializer
-
-# ViewSet para Propietario
-class PropietarioViewSet(viewsets.ModelViewSet):
-    queryset = Propietario.objects.all()
-    serializer_class = PropietarioSerializer
-
-class PropietarioCreateView(APIView):
-    #vista para verificar si existe el propietario
-    def post(self, request, *args, **kwargs):
-        # Obtener el documento de identidad del request data
-        documento_identidad = request.data.get('documento_identidad', None)
-
-        # Verificar si el documento de identidad ya existe
-        if Propietario.objects.filter(documento_identidad=documento_identidad).exists():
-            return Response(
-                {"error": "Ya existe un propietario con este documento de identidad."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        # Si no existe, procedemos a crear el nuevo propietario
-        serializer = PropietarioSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-
-
-# ViewSet para Inquilino
-class InquilinoViewSet(viewsets.ModelViewSet):
-    queryset = Inquilino.objects.all()
-    serializer_class = InquilinoSerializer
-
-# ViewSet para CuotaMantenimiento
-class CuotaMantenimientoViewSet(viewsets.ModelViewSet):
-    queryset = CuotaMantenimiento.objects.all()
-    serializer_class = CuotaMantenimientoSerializer
-
-# ViewSet para GastoComun
-class GastoComunViewSet(viewsets.ModelViewSet):
-    queryset = GastoComun.objects.all()
-    serializer_class = GastoComunSerializer
-
+    def perform_create(self, serializer):
+        numeroUnidad = serializer.validated_data.get('numero_unidad', None)
+        if Unidad.objects.filter(numero_unidad=numeroUnidad).exists():
+            raise ValidationError("Ya existe esta unidad.")
+        serializer.save()
+    
 # ViewSet para Pago
+
 class PagoViewSet(viewsets.ModelViewSet):
     queryset = Pago.objects.all()
     serializer_class = PagoSerializer
+    
+    def create(self, request, *args, **kwargs):
+        fecha_pago = request.data.get('fecha_pago')
+        
+        if fecha_pago:
+            fecha_pago = timezone.datetime.strptime(fecha_pago, '%Y-%m-%d').date()
+            if fecha_pago < timezone.now().date():
+                raise ValidationError({"detail": "El pago ya ha vencido."})
+        
+        return super().create(request, *args, **kwargs)
+    
+    def update(self, request, *args, **kwargs):
+        fecha_pago = request.data.get('fecha_pago')
 
-# ViewSet para ContratoServicio
-class ContratoServicioViewSet(viewsets.ModelViewSet):
-    queryset = ContratoServicio.objects.all()
-    serializer_class = ContratoServicioSerializer
+        if fecha_pago:
+            fecha_pago = timezone.datetime.strptime(fecha_pago, '%Y-%m-%d').date()
+            if fecha_pago < timezone.now().date():
+                raise ValidationError({"detail": "El pago ya ha vencido y no puede ser actualizado."})
+
+        return super().update(request, *args, **kwargs)
+
+class UsuarioViewSet(viewsets.ModelViewSet):
+    queryset = Usuario.objects.all()
+    serializer_class = UsuarioSerializer
+    def perform_create(self, serializer):
+        email_v = serializer.validated_data.get('email',None)
+        if Usuario.objects.filter(email=email_v).exists():
+            raise ValidationError("Ya existe este usuario")
+    
+        serializer.save()
+

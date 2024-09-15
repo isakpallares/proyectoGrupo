@@ -1,18 +1,13 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import PropiedadViewSet, UnidadViewSet, InquilinoViewSet, CuotaMantenimientoViewSet, GastoComunViewSet, PagoViewSet, ContratoServicioViewSet, PropietarioViewSet, PropietarioCreateView
+from .views import PropiedadViewSet, UnidadViewSet,PagoViewSet, UsuarioViewSet
 
 router = DefaultRouter()
-router.register(r'propiedad', PropiedadViewSet)
-router.register(r'unidad', UnidadViewSet)
-router.register(r'inquilino', InquilinoViewSet)
-router.register(r'cuotamantenimiento', CuotaMantenimientoViewSet)
-router.register(r'pago', PagoViewSet)
-router.register(r'contratoservicio', ContratoServicioViewSet)
-router.register(r'propietario', PropietarioViewSet)
-router.register(r'gastoComun', GastoComunViewSet)
-router.register(r'propietario', PropietarioCreateView)
+router.register(r'propiedades', PropiedadViewSet)
+router.register(r'unidades', UnidadViewSet)
+router.register(r'usuarios', UsuarioViewSet)
+router.register(r'pagos', PagoViewSet)
 
-urlpatterns = [
+urlpatterns = [ 
     path('api/', include(router.urls)),
 ]

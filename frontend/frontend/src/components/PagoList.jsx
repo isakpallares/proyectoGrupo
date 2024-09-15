@@ -21,17 +21,17 @@ function Pagos() {
     }, []);
 
     const fetchPagos = async () => {
-        const response = await axios.get('http://localhost:8000/api/pagos/');
+        const response = await axios.get('http://localhost:8000/pagos/');
         setPagos(response.data);
     };
 
     const fetchCuotas = async () => {
-        const response = await axios.get('http://localhost:8000/api/cuotas-mantenimiento/');
+        const response = await axios.get('http://localhost:8000/cuotas-mantenimiento/');
         setCuotas(response.data);
     };
 
     const fetchPropietarios = async () => {
-        const response = await axios.get('http://localhost:8000/api/propietarios/');
+        const response = await axios.get('http://localhost:8000/propietarios/');
         setPropietarios(response.data);
     };
 
@@ -45,10 +45,10 @@ function Pagos() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (editing) {
-            await axios.put(`http://localhost:8000/api/pagos/${currentId}/`, pago);
+            await axios.put(`http://localhost:8000/pagos/${currentId}/`, pago);
             setEditing(false);
         } else {
-            await axios.post('http://localhost:8000/api/pagos/', pago);
+            await axios.post('http://localhost:8000/pagos/', pago);
         }
         fetchPagos();
         setPago({ 
