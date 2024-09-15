@@ -2,130 +2,80 @@ import React, { useState } from "react";
 import Sidebar from "../components/Sidebar.jsx";
 import HeaderAdmin from "../components/HeaderAdmin.jsx";
 import "../App.css";
+import { obtenerPropiedadPorNombre,obtenerPropiedades, crearPropiedad, actualizarPropiedad, eliminarPropiedad  } from './services/propiedadService';
+
 
 function PropiedadesPage() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [propiedades, setPropiedades] = useState([
-    {
-      id: 1,
-      nombre: "Propiedad 1",
-      direccion: "123 Calle Principal",
-      pisos: 3,
-      cuota: "$2000",
-      unidades: 10, // Nueva propiedad con unidades
-    },
-    {
-      id: 2,
-      nombre: "Propiedad 2",
-      direccion: "456 Avenida Secundaria",
-      pisos: 5,
-      cuota: "$3000",
-      unidades: 20, // Nueva propiedad con unidades
-    },
-    {
-      id: 3,
-      nombre: "Propiedad 3",
-      direccion: "456 Avenida Secundaria",
-      pisos: 5,
-      cuota: "$3000",
-      unidades: 20, // Nueva propiedad con unidades
-    },
-    {
-      id: 4,
-      nombre: "Propiedad 4",
-      direccion: "456 Avenida Secundaria",
-      pisos: 5,
-      cuota: "$3000",
-      unidades: 20, // Nueva propiedad con unidades
-    },
-    {
-      id: 5,
-      nombre: "Propiedad 5",
-      direccion: "456 Avenida Secundaria",
-      pisos: 5,
-      cuota: "$3000",
-      unidades: 20, // Nueva propiedad con unidades
-    },
-
-    // Más propiedades aquí...
-  ]);
-
-  const [newPropiedad, setNewPropiedad] = useState({
-    id: "",
-    nombre: "",
-    direccion: "",
-    pisos: "",
-    cuota: "",
-    unidades: "", // Nuevo campo de unidades
+  const [propiedades, setPropiedades] = useState([]);
+  const [nuevaPropiedad, setNuevaPropiedad] = useState({
+    nombre_propiedad: '',
+    direccion_propiedad: '',
+    numero_unidades: 0,
+    cuota: 0,
+    Presupuesto: 0
   });
+  const [propiedadSeleccionada, setPropiedadSeleccionada] = useState(null);
+  const [nombrePropiedad, setNombrePropiedad] = useState('');
+  const [propiedad, setPropiedad] = useState(null);
+  const [error, setError] = useState(null);
 
-  const filteredPropiedades = propiedades.filter((propiedad) =>
-    propiedad.nombre.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  useEffect(() => {
+    const cargarPropiedades = async () => {
+      try {
+        const propiedadesData = await obtenerPropiedades();
+        setPropiedades(propiedadesData);
+      } catch (error) {
+        console.error('Error al cargar las propiedades:', error);
+      }
+    };
 
-  const handleInputChangeAñadir = (e) => {
-    const { name, value } = e.target;
-    setNewPropiedad({ ...newPropiedad, [name]: value });
-  };
+    cargarPropiedades();
+  }, []);
 
-  const handleAddProperty = () => {
-    if (
-      newPropiedad.nombre &&
-      newPropiedad.direccion &&
-      newPropiedad.pisos &&
-      newPropiedad.cuota &&
-      newPropiedad.unidades // Verifica que el campo de unidades esté completado
-    ) {
-      const newId = propiedades.length + 1;
-      setPropiedades([...propiedades, { ...newPropiedad, id: newId }]);
-      setNewPropiedad({
-        id: "",
-        nombre: "",
-        direccion: "",
-        pisos: "",
-        cuota: "",
-        unidades: "", // Reiniciar campo de unidades
-      });
-    } else {
-      alert("Por favor, completa todos los campos.");
+  const agregarPropiedad = async () => {
+    try {
+      const nuevaProp = await crearPropiedad(nuevaPropiedad);
+      setPropiedades([...propiedades, nuevaProp]);
+    } catch (error) {
+      console.error('Error al agregar la propiedad:', error);
     }
   };
 
-  const [editPropiedadId, setEditPropiedadId] = useState(null);
-  const [editFormData, setEditFormData] = useState({
-    nombre: "",
-    direccion: "",
-    pisos: "",
-    cuota: "",
-    unidades: "",
-  });
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setEditFormData({ ...editFormData, [name]: value });
+  const buscarPropiedad = async () => {
+    try {
+      const resultado = await obtenerPropiedadPorNombre(nombrePropiedad); 
+      if (resultado) {
+        setPropiedad(resultado);
+        setError(null);
+      } else {
+        setPropiedad(null);
+        setError('No se encontró ninguna propiedad con ese nombre');
+      }
+    } catch (err) {
+      console.error('Error al buscar la propiedad:', err);
+      setError('Hubo un error al buscar la propiedad');
+    }
   };
 
-  const handleEditClick = (propiedad) => {
-    setEditPropiedadId(propiedad.id);
-    setEditFormData({
-      nombre: propiedad.nombre,
-      direccion: propiedad.direccion,
-      pisos: propiedad.pisos,
-      cuota: propiedad.cuota,
-      unidades: propiedad.unidades,
-    });
+  const editarPropiedad = async (id) => {
+    try {
+      const propiedadActualizada = await actualizarPropiedad(id, propiedadSeleccionada);
+      setPropiedades(propiedades.map(p => (p.id === id ? propiedadActualizada : p)));
+    } catch (error) {
+      console.error('Error al actualizar la propiedad:', error);
+    }
   };
 
-  const handleSaveClick = (id) => {
-    const updatedPropiedades = propiedades.map((propiedad) =>
-      propiedad.id === id ? { ...propiedad, ...editFormData } : propiedad
-    );
-    setPropiedades(updatedPropiedades);
-    setEditPropiedadId(null); // Termina la edición
+  const borrarPropiedad = async (id) => {
+    try {
+      await eliminarPropiedad(id);
+      setPropiedades(propiedades.filter(p => p.id !== id));
+    } catch (error) {
+      console.error('Error al eliminar la propiedad:', error);
+    }
   };
 
-  const handleDelete = (id) => {
-    setPropiedades(propiedades.filter((propiedad) => propiedad.id !== id));
-  };
 
   return (
     <div className="flex flex-col h-screen">
