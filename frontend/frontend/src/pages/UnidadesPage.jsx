@@ -2,134 +2,112 @@ import React, { useState } from "react";
 import Sidebar from "../components/Sidebar.jsx";
 import HeaderAdmin from "../components/HeaderAdmin.jsx";
 import "../App.css";
+import { obtenerPropiedadPorNombre,obtenerPropiedades} from './services/propiedadService';
+import {
+  obtenerUnidades,
+  crearUnidad,
+  actualizarUnidad,
+  eliminarUnidad,
+} from './services/unidadService'; // Importar las funciones del servicio
 
 function UnidadesPage() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [propiedades, setPropiedades] = useState([
-    {
-      id: 1,
-      nombre: "Propiedad 1",
-      direccion: "123 Calle Principal",
-      pisos: 3,
-      cuota: "$2000",
-      unidades: 10,
-    },
-    {
-      id: 2,
-      nombre: "Propiedad 2",
-      direccion: "456 Avenida Secundaria",
-      pisos: 5,
-      cuota: "$3000",
-      unidades: 20,
-    },
-    // Más propiedades aquí...
-  ]);
+  const [propiedades, setPropiedades] = useState([]);
+  const [unidades, setUnidades] = useState([]);
+  const [nuevaUnidad, setNuevaUnidad] = useState({
+    id_propiedad: '',
+    numero_unidad: 0,
+    nombre_inquilino: '',
+    cedula_inquilino: '',
+    telefono_inquilino: '',
+    estado: false,
+    coeficiente: 0,
+  });
+  const [unidadSeleccionada, setUnidadSeleccionada] = useState(null);
+  // const [selectedPropiedad, setSelectedPropiedad] = useState(null);
+  // const [selectedPropiedadId, setSelectedPropiedadId] = useState(null);
 
-  const [unidades, setUnidades] = useState([
-    {
-      idPropiedad: 1,
-      numeroUnidad: "1",
-      nombreInquilino: "",
-      cedulaInquilino: "",
-      telefonoInquilino: "",
-      estado: "DISPONIBLE",
-      coeficiente: 1123,
-    },
-    {
-      idPropiedad: 2,
-      numeroUnidad: "2",
-      nombreInquilino: "Isak",
-      cedulaInquilino: 2,
-      telefonoInquilino: "2",
-      estado: "OCUPADA",
-      coeficiente: 2123,
-    },
-    {
-      idPropiedad: 1,
-      numeroUnidad: "3",
-      nombreInquilino: "",
-      cedulaInquilino: "",
-      telefonoInquilino: "",
-      estado: "DISPONIBLE",
-      coeficiente: 10000,
-    },
-    {
-      idPropiedad: 2,
-      numeroUnidad: "4",
-      nombreInquilino: "Dairo",
-      cedulaInquilino: 4,
-      telefonoInquilino: "4",
-      estado: "OCUPADA",
-      coeficiente: 23123,
-    },
-    {
-      idPropiedad: 3,
-      numeroUnidad: "4",
-      nombreInquilino: "Dairo",
-      cedulaInquilino: 4,
-      telefonoInquilino: "4",
-      estado: "OCUPADA",
-      coeficiente: 23123,
-    },
-    // Más unidades aquí...
-  ]);
+  useEffect(() => {
+    const cargarUnidades = async () => {
+      try {
+        const unidadesData = await obtenerUnidades();
+        setUnidades(unidadesData);
+      } catch (error) {
+        console.error('Error al cargar las unidades:', error);
+      }
+    };
 
-  const [selectedPropiedad, setSelectedPropiedad] = useState(null);
-  const [selectedPropiedadId, setSelectedPropiedadId] = useState(null);
+    cargarUnidades();
+  }, []);
 
-  const handleSearch = () => {
-    const propiedad = propiedades.find(
-      (prop) => prop.id === parseInt(searchTerm)
-    );
-    setSelectedPropiedadId(searchTerm);
-    setSelectedPropiedad(propiedad);
+  useEffect(() => {
+    const cargarPropiedades = async () => {
+      try {
+        const propiedadesData = await obtenerPropiedades();
+        setPropiedades(propiedadesData);
+      } catch (error) {
+        console.error('Error al cargar las propiedades:', error);
+      }
+    };
+
+    cargarPropiedades();
+  }, []);
+
+
+  const buscarPropiedad = async () => {
+    try {
+      const resultado = await obtenerPropiedadPorNombre(nombrePropiedad); 
+      if (resultado) {
+        setPropiedad(resultado);
+        setError(null);
+      } else {
+        setPropiedad(null);
+        setError('No se encontró ninguna propiedad con ese nombre');
+      }
+    } catch (err) {
+      console.error('Error al buscar la propiedad:', err);
+      setError('Hubo un error al buscar la propiedad');
+    }
   };
 
-  const handleChangeState = (numeroUnidad) => {
-    setUnidades((prevUnidades) =>
-      prevUnidades.map((unidad) =>
-        unidad.numeroUnidad === numeroUnidad
-          ? {
-              ...unidad,
-              estado: "OCUPADA",
-            }
-          : unidad
-      )
-    );
+
+  const agregarUnidad = async () => {
+    try {
+      const nuevaUn = await crearUnidad(nuevaUnidad);
+      setUnidades([...unidades, nuevaUn]);
+      setNuevaUnidad({
+        id_propiedad: '',
+        numero_unidad: 0,
+        nombre_inquilino: '',
+        cedula_inquilino: '',
+        telefono_inquilino: '',
+        estado: false,
+        coeficiente: 0,
+      });
+    } catch (error) {
+      console.error('Error al agregar la unidad:', error);
+    }
   };
 
-  const unidadesDisponibles = unidades.filter(
-    (unidad) =>
-      unidad.idPropiedad === parseInt(selectedPropiedadId) &&
-      unidad.estado === "DISPONIBLE"
-  );
-  const unidadesOcupadas = unidades.filter(
-    (unidad) =>
-      unidad.idPropiedad === parseInt(selectedPropiedadId) &&
-      unidad.estado === "OCUPADA"
-  );
-   const isUnidadValid = (unidad) => {
-     return (
-       unidad.nombreInquilino.trim() !== "" &&
-       unidad.cedulaInquilino.trim() !== "" &&
-       unidad.telefonoInquilino.trim() !== ""
-     );
-   };
-const handleSetAvailable = (numeroUnidad) => {
-  setUnidades((prevUnidades) =>
-    prevUnidades.map((unidad) =>
-      unidad.numeroUnidad === numeroUnidad
-        ? {
-            ...unidad,
-            estado: "DISPONIBLE",
-            nombreInquilino: "",
-            cedulaInquilino: "",
-            telefonoInquilino: "",
-          }
-        : unidad
-    )
-  );
-};
+  const editarUnidad = async (id) => {
+    try {
+      const unidadActualizada = await actualizarUnidad(id, unidadSeleccionada);
+      setUnidades(unidades.map(u => (u.id === id ? unidadActualizada : u)));
+    } catch (error) {
+      console.error('Error al actualizar la unidad:', error);
+    }
+  };
+
+  const borrarUnidad = async (id) => {
+    try {
+      await eliminarUnidad(id);
+      setUnidades(unidades.filter(u => u.id !== id));
+    } catch (error) {
+      console.error('Error al eliminar la unidad:', error);
+    }
+  };
+
+
   return (
     <div className="flex flex-col h-screen">
       <div className="flex flex-1">
