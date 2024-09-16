@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { login } from "./services/loginService"; //Importe del servicio loginService.js
+import { login } from "../services/loginService"; //Importe del servicio loginService.js
 import logoNegroN from "../assets/logoNegroN.png";
 
 const Login = () => {

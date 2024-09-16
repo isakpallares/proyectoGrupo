@@ -2,13 +2,13 @@ import React, { useState } from "react";
 import Sidebar from "../components/Sidebar.jsx";
 import HeaderAdmin from "../components/HeaderAdmin.jsx";
 import "../App.css";
-import { obtenerPropiedadPorNombre,obtenerPropiedades} from './services/propiedadService';
+import { obtenerPropiedadPorNombre,obtenerPropiedades} from '../services/propiedadService';
 import {
   obtenerUnidades,
   crearUnidad,
   actualizarUnidad,
   eliminarUnidad,
-} from './services/unidadService'; // Importar las funciones del servicio
+} from '../services/unidadService'; // Importar las funciones del servicio
 
 function UnidadesPage() {
   const [searchTerm, setSearchTerm] = useState("");

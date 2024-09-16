@@ -1,24 +1,37 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar.jsx";
 import HeaderAdmin from "../components/HeaderAdmin.jsx";
 import "../App.css";
-import { obtenerPropiedadPorNombre,obtenerPropiedades, crearPropiedad, actualizarPropiedad, eliminarPropiedad  } from './services/propiedadService';
-
+import {
+  obtenerPropiedadPorNombre,
+  obtenerPropiedades,
+  crearPropiedad,
+  actualizarPropiedad,
+  eliminarPropiedad,
+} from "../services/propiedadService";
 
 function PropiedadesPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [propiedades, setPropiedades] = useState([]);
   const [nuevaPropiedad, setNuevaPropiedad] = useState({
-    nombre_propiedad: '',
-    direccion_propiedad: '',
+    nombre_propiedad: "",
+    direccion_propiedad: "",
     numero_unidades: 0,
     cuota: 0,
-    Presupuesto: 0
+    Presupuesto: 0,
   });
   const [propiedadSeleccionada, setPropiedadSeleccionada] = useState(null);
-  const [nombrePropiedad, setNombrePropiedad] = useState('');
+  const [nombrePropiedad, setNombrePropiedad] = useState("");
   const [propiedad, setPropiedad] = useState(null);
   const [error, setError] = useState(null);
+  const [editPropiedadId, setEditPropiedadId] = useState(null);
+  const [editFormData, setEditFormData] = useState({
+    nombre: "",
+    direccion: "",
+    pisos: "",
+    cuota: "",
+    unidades: "",
+  });
 
   useEffect(() => {
     const cargarPropiedades = async () => {
@@ -26,7 +39,7 @@ function PropiedadesPage() {
         const propiedadesData = await obtenerPropiedades();
         setPropiedades(propiedadesData);
       } catch (error) {
-        console.error('Error al cargar las propiedades:', error);
+        console.error("Error al cargar las propiedades:", error);
       }
     };
 
@@ -37,45 +50,101 @@ function PropiedadesPage() {
     try {
       const nuevaProp = await crearPropiedad(nuevaPropiedad);
       setPropiedades([...propiedades, nuevaProp]);
+      setNuevaPropiedad({
+        nombre_propiedad: "",
+        direccion_propiedad: "",
+        numero_unidades: 0,
+        cuota: 0,
+        Presupuesto: 0,
+      });
     } catch (error) {
-      console.error('Error al agregar la propiedad:', error);
+      console.error("Error al agregar la propiedad:", error);
     }
   };
 
   const buscarPropiedad = async () => {
     try {
-      const resultado = await obtenerPropiedadPorNombre(nombrePropiedad); 
+      const resultado = await obtenerPropiedadPorNombre(nombrePropiedad);
       if (resultado) {
         setPropiedad(resultado);
         setError(null);
       } else {
         setPropiedad(null);
-        setError('No se encontró ninguna propiedad con ese nombre');
+        setError("No se encontró ninguna propiedad con ese nombre");
       }
     } catch (err) {
-      console.error('Error al buscar la propiedad:', err);
-      setError('Hubo un error al buscar la propiedad');
+      console.error("Error al buscar la propiedad:", err);
+      setError("Hubo un error al buscar la propiedad");
     }
   };
 
   const editarPropiedad = async (id) => {
     try {
-      const propiedadActualizada = await actualizarPropiedad(id, propiedadSeleccionada);
-      setPropiedades(propiedades.map(p => (p.id === id ? propiedadActualizada : p)));
+      const propiedadActualizada = await actualizarPropiedad(
+        id,
+        propiedadSeleccionada
+      );
+      setPropiedades(
+        propiedades.map((p) => (p.id === id ? propiedadActualizada : p))
+      );
+      setEditPropiedadId(null);
+      setPropiedadSeleccionada(null);
     } catch (error) {
-      console.error('Error al actualizar la propiedad:', error);
+      console.error("Error al actualizar la propiedad:", error);
     }
   };
 
   const borrarPropiedad = async (id) => {
     try {
       await eliminarPropiedad(id);
-      setPropiedades(propiedades.filter(p => p.id !== id));
+      setPropiedades(propiedades.filter((p) => p.id !== id));
     } catch (error) {
-      console.error('Error al eliminar la propiedad:', error);
+      console.error("Error al eliminar la propiedad:", error);
     }
   };
 
+  const handleInputChangeAñadir = (e) => {
+    const { name, value } = e.target;
+    setNuevaPropiedad((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditFormData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  const handleAddProperty = () => {
+    agregarPropiedad();
+  };
+
+  const handleEditClick = (propiedad) => {
+    setEditPropiedadId(propiedad.id);
+    setEditFormData({
+      nombre: propiedad.nombre,
+      direccion: propiedad.direccion,
+      pisos: propiedad.pisos,
+      cuota: propiedad.cuota,
+      unidades: propiedad.unidades,
+    });
+  };
+
+  const handleSaveClick = (id) => {
+    editarPropiedad(id);
+  };
+
+  const handleDelete = (id) => {
+    borrarPropiedad(id);
+  };
+
+  const filteredPropiedades = propiedades.filter((propiedad) =>
+    propiedad.nombre.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="flex flex-col h-screen">
@@ -99,46 +168,44 @@ function PropiedadesPage() {
               <div className="flex flex-col space-y-4 w-full max-w-2xl  h-96">
                 <input
                   type="text"
-                  name="nombre"
+                  name="nombre_propiedad"
                   placeholder="Nombre de la Propiedad"
-                  value={newPropiedad.nombre}
+                  value={nuevaPropiedad.nombre_propiedad}
                   onChange={handleInputChangeAñadir}
                   className="px-4 py-2 border rounded mb-2 focus:outline-none focus:ring-2 focus:ring-oscuro focus:border-oscuro"
                 />
                 <input
                   type="text"
-                  name="direccion"
+                  name="direccion_propiedad"
                   placeholder="Dirección"
-                  value={newPropiedad.direccion}
+                  value={nuevaPropiedad.direccion_propiedad}
                   onChange={handleInputChangeAñadir}
                   className="px-4 py-2 border rounded mb-2 focus:outline-none focus:ring-2 focus:ring-oscuro focus:border-oscuro"
                 />
                 <input
                   type="number"
-                  name="pisos"
-                  placeholder="Número de Pisos"
-                  value={newPropiedad.pisos}
+                  name="numero_unidades"
+                  placeholder="Número de Unidades"
+                  value={nuevaPropiedad.numero_unidades}
                   onChange={handleInputChangeAñadir}
                   className="px-4 py-2 border rounded mb-2 focus:outline-none focus:ring-2 focus:ring-oscuro focus:border-oscuro"
                 />
                 <input
-                  type="text"
+                  type="number"
                   name="cuota"
                   placeholder="Cuota"
-                  value={newPropiedad.cuota}
+                  value={nuevaPropiedad.cuota}
                   onChange={handleInputChangeAñadir}
                   className="px-4 py-2 border rounded mb-2 focus:outline-none focus:ring-2 focus:ring-oscuro focus:border-oscuro"
                 />
-                {/* Nuevo campo de Unidades */}
                 <input
                   type="number"
-                  name="unidades"
-                  placeholder="Número de Unidades"
-                  value={newPropiedad.unidades}
+                  name="Presupuesto"
+                  placeholder="Presupuesto"
+                  value={nuevaPropiedad.Presupuesto}
                   onChange={handleInputChangeAñadir}
                   className="px-4 py-2 border rounded mb-2 focus:outline-none focus:ring-2 focus:ring-oscuro focus:border-oscuro"
                 />
-                <br></br>
                 <button
                   className="mt-6 bg-oscuro hover:bg-medio text-white font-bold py-2 px-4 rounded self-center"
                   onClick={handleAddProperty}
@@ -167,10 +234,11 @@ function PropiedadesPage() {
                         <th className="px-4 py-2 text-center">ID</th>
                         <th className="px-4 py-2 text-center">Nombre</th>
                         <th className="px-4 py-2 text-center">Dirección</th>
-                        <th className="px-4 py-2 text-center">Pisos</th>
+                        <th className="px-4 py-2 text-center">
+                          Número de Unidades
+                        </th>
                         <th className="px-4 py-2 text-center">Cuota</th>
-                        <th className="px-4 py-2 text-center">Unidades</th>{" "}
-                        {/* Nuevo campo */}
+                        <th className="px-4 py-2 text-center">Presupuesto</th>
                         <th className="px-4 py-2 text-center" colSpan={2}>
                           Acciones
                         </th>
@@ -224,7 +292,7 @@ function PropiedadesPage() {
                           <td className="px-4 py-2 text-center">
                             {editPropiedadId === propiedad.id ? (
                               <input
-                                type="text"
+                                type="number"
                                 name="cuota"
                                 value={editFormData.cuota}
                                 onChange={handleInputChange}
