@@ -56,10 +56,5 @@ class PagoViewSet(viewsets.ModelViewSet):
 class UsuarioViewSet(viewsets.ModelViewSet):
     queryset = Usuario.objects.all()
     serializer_class = UsuarioSerializer
-    def perform_create(self, serializer):
-        email_v = serializer.validated_data.get('email',None)
-        if Usuario.objects.filter(email=email_v).exists():
-            raise ValidationError("Ya existe este usuario")
-    
-        serializer.save()
+
 

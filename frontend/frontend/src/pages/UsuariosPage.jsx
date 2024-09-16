@@ -5,81 +5,103 @@ import { useNavigate } from "react-router-dom";
 import "../App.css";
 import iconUsuario from "../assets/usuarios.png";
 
-function UsuariosPage() {
-  const navigate = useNavigate(); 
-  const [searchTerm, setSearchTerm] = useState("");
-  const [usuarios, setUsuario] = useState([
-    { email: "ale@gmail.com", contraseña: "1234" },
-    { email: "epa@gmail.com", contraseña: "1234" },
-    { email: "opa@gmail.com", contraseña: "1234" },
-  ]);
-
-  const [newUsuario, setNewUsuario] = useState({ email: "", contraseña: "" });
+const UsuariosPage = () => {
+  const [showModal, setShowModal] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [inputPassword, setInputPassword] = useState("");
-  const correctPassword = "admin123";
-
+  const [newUsuario, setNewUsuario] = useState({ email: "", contraseña: "" });
+  const [usuarios, setUsuarios] = useState([]);
   const [editUsuarioEmail, setEditUsuarioEmail] = useState(null);
-  const [editFormData, setEditFormData] = useState({
-    email: "",
-    contraseña: "",
-  });
-  const [showModal, setShowModal] = useState(true); // Mostrar el modal para la autenticación
+  const [editFormData, setEditFormData] = useState({ contraseña: "" });
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredUsuarios, setFilteredUsuarios] = useState([]);
 
-  const filteredUsuarios = usuarios.filter((usuario) =>
-    usuario.email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const handleInputChangeAñadir = (e) => {
-    const { name, value } = e.target;
-    setNewUsuario({ ...newUsuario, [name]: value });
-  };
-
-  const handleAddUsuario = () => {
-    if (newUsuario.email && newUsuario.contraseña) {
-      setUsuario([...usuarios, { ...newUsuario }]);
-      setNewUsuario({ email: "", contraseña: "" });
-    } else {
-      alert("Por favor, completa todos los campos.");
-    }
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setEditFormData({ ...editFormData, [name]: value });
-  };
-
-  const handleEditClick = (usuario) => {
-    setEditUsuarioEmail(usuario.email);
-    setEditFormData({ email: usuario.email, contraseña: usuario.contraseña });
-  };
-
-  const handleSaveClick = (email) => {
-    const updatedUsuarios = usuarios.map((usuario) =>
-      usuario.email === email
-        ? { ...usuario, contraseña: editFormData.contraseña }
-        : usuario
-    );
-    setUsuario(updatedUsuarios);
-    setEditUsuarioEmail(null); // Termina la edición
-  };
-
-  const handleDelete = (email) => {
-    setUsuario(usuarios.filter((usuario) => usuario.email !== email));
-  };
-
+  // Autenticación básica para ingresar al panel
   const handlePasswordSubmit = (e) => {
     e.preventDefault();
-    if (inputPassword === correctPassword) {
+    if (inputPassword === "tu_contraseña") {
       setIsAuthenticated(true);
-      setShowModal(false); // Oculta el modal después de autenticarse
+      setShowModal(false);
     } else {
       alert("Contraseña incorrecta");
     }
   };
+
   const handleBackClick = () => {
-   navigate("/admin/propiedades");
+    setShowModal(false);
   };
+
+  // Obtener usuarios desde la API
+  const fetchUsuarios = async () => {
+    try {
+      const response = await axios.get("http://localhost:8000/api/usuarios");
+      setUsuarios(response.data);
+    } catch (error) {
+      console.error("Error al obtener usuarios:", error);
+    }
+  };
+
+  // Crear un nuevo usuario
+  const handleAddUsuario = async () => {
+    try {
+      await axios.post("http://localhost:8000/api/usuarios", newUsuario);
+      fetchUsuarios(); // Refrescar lista de usuarios
+      setNewUsuario({ email: "", contraseña: "" }); // Limpiar el formulario
+    } catch (error) {
+      console.error("Error al añadir usuario:", error);
+    }
+  };
+
+  // Eliminar usuario
+  const handleDelete = async (email) => {
+    try {
+      await axios.delete(`http://localhost:8000/api/usuarios/${email}`);
+      fetchUsuarios(); // Refrescar lista de usuarios
+    } catch (error) {
+      console.error("Error al eliminar usuario:", error);
+    }
+  };
+
+  // Editar usuario
+  const handleEditClick = (usuario) => {
+    setEditUsuarioEmail(usuario.email);
+    setEditFormData({ contraseña: usuario.contraseña });
+  };
+
+  // Guardar cambios de edición
+  const handleSaveClick = async (email) => {
+    try {
+      await axios.put(`http://localhost:8000/api/usuarios/${email}`, editFormData);
+      setEditUsuarioEmail(null); // Salir del modo de edición
+      fetchUsuarios(); // Refrescar lista de usuarios
+    } catch (error) {
+      console.error("Error al actualizar usuario:", error);
+    }
+  };
+
+  // Manejar cambios en el formulario de añadir y editar
+  const handleInputChangeAñadir = (e) => {
+    setNewUsuario({ ...newUsuario, [e.target.name]: e.target.value });
+  };
+
+  const handleInputChange = (e) => {
+    setEditFormData({ ...editFormData, [e.target.name]: e.target.value });
+  };
+
+  // Filtrar usuarios por término de búsqueda
+  useEffect(() => {
+    setFilteredUsuarios(
+      usuarios.filter((usuario) =>
+        usuario.email.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    );
+  }, [searchTerm, usuarios]);
+
+  // Cargar usuarios cuando el componente se monta
+  useEffect(() => {
+    fetchUsuarios();
+  }, []);
+
   return (
     <div className="flex flex-col h-screen">
       {/* Modal de autenticación */}
@@ -119,23 +141,13 @@ function UsuariosPage() {
           <div className="flex-1">
             <HeaderAdmin />
             <main className="ml-44 bg-gray-100 pt-8 pb-40">
-              <h1 className="text-3xl font-bold mb-4 mt-3 ml-8">
-                Manejo de Usuarios
-              </h1>
-              <p className="ml-8 text-xl">
-                Aquí puedes crear, actualizar, eliminar y ver tus usuarios.
-              </p>
+              <h1 className="text-3xl font-bold mb-4 mt-3 ml-8">Manejo de Usuarios</h1>
+              <p className="ml-8 text-xl">Aquí puedes crear, actualizar, eliminar y ver tus usuarios.</p>
               <div className="ml-8 mt-6 flex flex-col items-center space-y-6 w-11/12">
                 <hr className="my-8 border-t-2 border-gray-300 w-3/4" />
-                <h2 className="text-2xl font-bold mt-4">
-                  Añadir Nuevo Usuario
-                </h2>
-                <img
-                  src={iconUsuario}
-                  alt="usuario"
-                  className="w-40 mx-auto"
-                ></img>
-                <div className="flex flex-col space-y-4 w-full max-w-2xl  h-96">
+                <h2 className="text-2xl font-bold mt-4">Añadir Nuevo Usuario</h2>
+                <img src={iconUsuario} alt="usuario" className="w-40 mx-auto"></img>
+                <div className="flex flex-col space-y-4 w-full max-w-2xl h-96">
                   <input
                     type="text"
                     name="email"
@@ -145,14 +157,14 @@ function UsuariosPage() {
                     className="px-4 py-2 border rounded mb-2 focus:outline-none focus:ring-2 focus:ring-oscuro focus:border-oscuro"
                   />
                   <input
-                    type="text"
+                    type="password"
                     name="contraseña"
                     placeholder="Contraseña"
                     value={newUsuario.contraseña}
                     onChange={handleInputChangeAñadir}
                     className="px-4 py-2 border rounded mb-2 focus:outline-none focus:ring-2 focus:ring-oscuro focus:border-oscuro"
                   />
-                  <br></br>
+                  <br />
                   <button
                     className="mt-6 bg-oscuro hover:bg-medio text-white font-bold py-2 px-4 rounded self-center"
                     onClick={handleAddUsuario}
@@ -187,9 +199,7 @@ function UsuariosPage() {
                       <tbody>
                         {filteredUsuarios.map((usuario, index) => (
                           <tr key={index} className="border-t border-gray-300">
-                            <td className="px-4 py-2 text-center">
-                              {usuario.email}
-                            </td>
+                            <td className="px-4 py-2 text-center">{usuario.email}</td>
                             <td className="px-4 py-2 text-center">
                               {editUsuarioEmail === usuario.email ? (
                                 <input
@@ -241,6 +251,6 @@ function UsuariosPage() {
       )}
     </div>
   );
-}
+};
 
 export default UsuariosPage;

@@ -1,22 +1,40 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { login } from "../services/loginService"; //Importe del servicio loginService.js
-import logoNegroN from "../assets/logoNegroN.png";
+import React, { useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate(); 
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(''); 
 
     try {
-      await login(email, password);
-      navigate("/dashboard");
-    } catch (err) {
-      setError("Email o contraseña incorrectos");
+      
+      const response = await axios.post('http://localhost:8000/api/usuarios/', {
+        email,
+        password,
+      });
+
+      if (response.status === 200) {
+        const userData = response.data;
+
+        if (userData.exists) {
+          console.log('Usuario autenticado correctamente');
+          navigate('/dashboard');
+        } else {
+          setError('El usuario no existe. Por favor, regístrate.');
+        }
+      }
+    } catch (error) {
+      if (error.response && error.response.status === 400) {
+        setError('Correo o contraseña incorrectos.');
+      } else {
+        setError('Ocurrió un error. Por favor, inténtalo de nuevo.');
+      }
     }
   };
 
@@ -82,4 +100,3 @@ const Login = () => {
 };
 
 export default Login;
-

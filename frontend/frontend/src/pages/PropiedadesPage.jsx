@@ -2,148 +2,88 @@ import React, { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar.jsx";
 import HeaderAdmin from "../components/HeaderAdmin.jsx";
 import "../App.css";
-import {
-  obtenerPropiedadPorNombre,
-  obtenerPropiedades,
-  crearPropiedad,
-  actualizarPropiedad,
-  eliminarPropiedad,
-} from "../services/propiedadService";
 
-function PropiedadesPage() {
-  const [searchTerm, setSearchTerm] = useState("");
+
+const PropiedadesPage = () => {
   const [propiedades, setPropiedades] = useState([]);
   const [nuevaPropiedad, setNuevaPropiedad] = useState({
-    nombre_propiedad: "",
-    direccion_propiedad: "",
-    numero_unidades: 0,
-    cuota: 0,
-    Presupuesto: 0,
+    nombre_propiedad: '',
+    direccion_propiedad: '',
+    numero_unidades: '',
+    cuota: '',
+    Presupuesto: ''
   });
-  const [propiedadSeleccionada, setPropiedadSeleccionada] = useState(null);
-  const [nombrePropiedad, setNombrePropiedad] = useState("");
-  const [propiedad, setPropiedad] = useState(null);
-  const [error, setError] = useState(null);
+  const [editFormData, setEditFormData] = useState({});
   const [editPropiedadId, setEditPropiedadId] = useState(null);
-  const [editFormData, setEditFormData] = useState({
-    nombre: "",
-    direccion: "",
-    pisos: "",
-    cuota: "",
-    unidades: "",
-  });
+  const [searchTerm, setSearchTerm] = useState('');
 
+  // Obtener todas las propiedades (GET)
   useEffect(() => {
-    const cargarPropiedades = async () => {
-      try {
-        const propiedadesData = await obtenerPropiedades();
-        setPropiedades(propiedadesData);
-      } catch (error) {
-        console.error("Error al cargar las propiedades:", error);
-      }
-    };
-
-    cargarPropiedades();
+    fetchPropiedades();
   }, []);
 
-  const agregarPropiedad = async () => {
+  const fetchPropiedades = async () => {
     try {
-      const nuevaProp = await crearPropiedad(nuevaPropiedad);
-      setPropiedades([...propiedades, nuevaProp]);
-      setNuevaPropiedad({
-        nombre_propiedad: "",
-        direccion_propiedad: "",
-        numero_unidades: 0,
-        cuota: 0,
-        Presupuesto: 0,
-      });
+      const response = await axios.get('http://localhost:8000/api/propiedades/');
+      setPropiedades(response.data);
     } catch (error) {
-      console.error("Error al agregar la propiedad:", error);
+      console.error('Error al obtener propiedades:', error);
     }
   };
 
-  const buscarPropiedad = async () => {
+  // Añadir nueva propiedad (POST)
+  const handleAddProperty = async () => {
     try {
-      const resultado = await obtenerPropiedadPorNombre(nombrePropiedad);
-      if (resultado) {
-        setPropiedad(resultado);
-        setError(null);
-      } else {
-        setPropiedad(null);
-        setError("No se encontró ninguna propiedad con ese nombre");
-      }
-    } catch (err) {
-      console.error("Error al buscar la propiedad:", err);
-      setError("Hubo un error al buscar la propiedad");
+      const response = await axios.post('http://localhost:8000/api/propiedades/', nuevaPropiedad);
+      setPropiedades([...propiedades, response.data]);
+      setNuevaPropiedad({ nombre_propiedad: '', direccion_propiedad: '', numero_unidades: '', cuota: '', Presupuesto: '' });
+    } catch (error) {
+      console.error('Error al añadir propiedad:', error);
     }
   };
 
-  const editarPropiedad = async (id) => {
+  // Editar propiedad (PUT)
+  const handleSaveClick = async (id) => {
     try {
-      const propiedadActualizada = await actualizarPropiedad(
-        id,
-        propiedadSeleccionada
+      const response = await axios.put(`http://localhost:8000/api/propiedades/${id}/`, editFormData);
+      const updatedProperties = propiedades.map((propiedad) =>
+        propiedad.id === id ? response.data : propiedad
       );
-      setPropiedades(
-        propiedades.map((p) => (p.id === id ? propiedadActualizada : p))
-      );
+      setPropiedades(updatedProperties);
       setEditPropiedadId(null);
-      setPropiedadSeleccionada(null);
     } catch (error) {
-      console.error("Error al actualizar la propiedad:", error);
+      console.error('Error al guardar propiedad:', error);
     }
   };
 
-  const borrarPropiedad = async (id) => {
+  // Borrar propiedad (DELETE)
+  const handleDelete = async (id) => {
     try {
-      await eliminarPropiedad(id);
-      setPropiedades(propiedades.filter((p) => p.id !== id));
+      await axios.delete(`http://localhost:8000/api/propiedades/${id}/`);
+      const remainingProperties = propiedades.filter((propiedad) => propiedad.id !== id);
+      setPropiedades(remainingProperties);
     } catch (error) {
-      console.error("Error al eliminar la propiedad:", error);
+      console.error('Error al eliminar propiedad:', error);
     }
   };
 
   const handleInputChangeAñadir = (e) => {
     const { name, value } = e.target;
-    setNuevaPropiedad((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
+    setNuevaPropiedad({ ...nuevaPropiedad, [name]: value });
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setEditFormData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
-
-  const handleAddProperty = () => {
-    agregarPropiedad();
+    setEditFormData({ ...editFormData, [name]: value });
   };
 
   const handleEditClick = (propiedad) => {
     setEditPropiedadId(propiedad.id);
-    setEditFormData({
-      nombre: propiedad.nombre,
-      direccion: propiedad.direccion,
-      pisos: propiedad.pisos,
-      cuota: propiedad.cuota,
-      unidades: propiedad.unidades,
-    });
-  };
-
-  const handleSaveClick = (id) => {
-    editarPropiedad(id);
-  };
-
-  const handleDelete = (id) => {
-    borrarPropiedad(id);
+    setEditFormData(propiedad);
   };
 
   const filteredPropiedades = propiedades.filter((propiedad) =>
-    propiedad.nombre.toLowerCase().includes(searchTerm.toLowerCase())
+    propiedad.nombre_propiedad.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -153,18 +93,13 @@ function PropiedadesPage() {
         <div className="flex-1">
           <HeaderAdmin />
           <main className="ml-44 bg-gray-100 pt-8 pb-40">
-            <h1 className="text-3xl font-bold mb-4 mt-3 ml-8">
-              Manejo de Propiedades
-            </h1>
-            <p className="ml-8 text-xl">
-              Aquí puedes crear, actualizar, eliminar y ver tus propiedades.
-            </p>
+            <h1 className="text-3xl font-bold mb-4 mt-3 ml-8">Manejo de Propiedades</h1>
+            <p className="ml-8 text-xl">Aquí puedes crear, actualizar, eliminar y ver tus propiedades.</p>
 
+            {/* Formulario para añadir nueva propiedad */}
             <div className="ml-8 mt-6 flex flex-col items-center space-y-6 w-11/12">
               <hr className="my-8 border-t-2 border-gray-300 w-3/4" />
-              <h2 className="text-2xl font-bold mt-4">
-                Añadir Nueva Propiedad
-              </h2>
+              <h2 className="text-2xl font-bold mt-4">Añadir Nueva Propiedad</h2>
               <div className="flex flex-col space-y-4 w-full max-w-2xl  h-96">
                 <input
                   type="text"
@@ -225,7 +160,7 @@ function PropiedadesPage() {
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="px-4 py-2 border rounded w-full max-w-2xl"
               />
-              {/* Tabla con barra deslizadora */}
+              {/* Tabla con las propiedades */}
               <div className="w-3/4 mt-8">
                 <div className="max-h-[500px] overflow-y-auto">
                   <table className="table-auto w-11/12 bg-white shadow-md rounded">
@@ -234,33 +169,27 @@ function PropiedadesPage() {
                         <th className="px-4 py-2 text-center">ID</th>
                         <th className="px-4 py-2 text-center">Nombre</th>
                         <th className="px-4 py-2 text-center">Dirección</th>
-                        <th className="px-4 py-2 text-center">
-                          Número de Unidades
-                        </th>
+                        <th className="px-4 py-2 text-center">Número de Unidades</th>
                         <th className="px-4 py-2 text-center">Cuota</th>
                         <th className="px-4 py-2 text-center">Presupuesto</th>
-                        <th className="px-4 py-2 text-center" colSpan={2}>
-                          Acciones
-                        </th>
+                        <th className="px-4 py-2 text-center" colSpan={2}>Acciones</th>
                       </tr>
                     </thead>
                     <tbody>
                       {filteredPropiedades.map((propiedad, index) => (
                         <tr key={index} className="border-t border-gray-300">
-                          <td className="px-4 py-2 text-center">
-                            {propiedad.id}
-                          </td>
+                          <td className="px-4 py-2 text-center">{propiedad.id}</td>
                           <td className="px-4 py-2 text-center">
                             {editPropiedadId === propiedad.id ? (
                               <input
                                 type="text"
                                 name="nombre"
-                                value={editFormData.nombre}
+                                value={editFormData.nombre_propiedad}
                                 onChange={handleInputChange}
                                 className="border px-2"
                               />
                             ) : (
-                              propiedad.nombre
+                              propiedad.nombre_propiedad
                             )}
                           </td>
                           <td className="px-4 py-2 text-center">
@@ -268,25 +197,25 @@ function PropiedadesPage() {
                               <input
                                 type="text"
                                 name="direccion"
-                                value={editFormData.direccion}
+                                value={editFormData.direccion_propiedad}
                                 onChange={handleInputChange}
                                 className="border px-2"
                               />
                             ) : (
-                              propiedad.direccion
+                              propiedad.direccion_propiedad
                             )}
                           </td>
                           <td className="px-4 py-2 text-center">
                             {editPropiedadId === propiedad.id ? (
                               <input
                                 type="number"
-                                name="pisos"
-                                value={editFormData.pisos}
+                                name="numero_unidades"
+                                value={editFormData.numero_unidades}
                                 onChange={handleInputChange}
                                 className="border px-2"
                               />
                             ) : (
-                              propiedad.pisos
+                              propiedad.numero_unidades
                             )}
                           </td>
                           <td className="px-4 py-2 text-center">
@@ -306,13 +235,13 @@ function PropiedadesPage() {
                             {editPropiedadId === propiedad.id ? (
                               <input
                                 type="number"
-                                name="unidades"
-                                value={editFormData.unidades}
+                                name="Presupuesto"
+                                value={editFormData.Presupuesto}
                                 onChange={handleInputChange}
                                 className="border px-2"
                               />
                             ) : (
-                              propiedad.unidades
+                              propiedad.Presupuesto
                             )}
                           </td>
                           <td className="px-4 py-2 text-center">
@@ -344,10 +273,7 @@ function PropiedadesPage() {
                       ))}
                       {filteredPropiedades.length === 0 && (
                         <tr>
-                          <td
-                            colSpan="7"
-                            className="px-4 py-2 text-center text-gray-500"
-                          >
+                          <td colSpan="7" className="px-4 py-2 text-center text-gray-500">
                             No se encontraron propiedades
                           </td>
                         </tr>
@@ -362,6 +288,6 @@ function PropiedadesPage() {
       </div>
     </div>
   );
-}
+};
 
 export default PropiedadesPage;
