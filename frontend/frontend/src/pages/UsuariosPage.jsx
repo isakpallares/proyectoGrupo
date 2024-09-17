@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar.jsx";
 import HeaderAdmin from "../components/HeaderAdmin.jsx";
 import { useNavigate } from "react-router-dom";
 import "../App.css";
 import iconUsuario from "../assets/usuarios.png";
+import axios from "axios";
 
 const UsuariosPage = () => {
   const [showModal, setShowModal] = useState(false);
@@ -71,7 +72,10 @@ const UsuariosPage = () => {
   // Guardar cambios de edición
   const handleSaveClick = async (email) => {
     try {
-      await axios.put(`http://localhost:8000/api/usuarios/${email}`, editFormData);
+      await axios.put(
+        `http://localhost:8000/api/usuarios/${email}`,
+        editFormData
+      );
       setEditUsuarioEmail(null); // Salir del modo de edición
       fetchUsuarios(); // Refrescar lista de usuarios
     } catch (error) {
@@ -141,12 +145,22 @@ const UsuariosPage = () => {
           <div className="flex-1">
             <HeaderAdmin />
             <main className="ml-44 bg-gray-100 pt-8 pb-40">
-              <h1 className="text-3xl font-bold mb-4 mt-3 ml-8">Manejo de Usuarios</h1>
-              <p className="ml-8 text-xl">Aquí puedes crear, actualizar, eliminar y ver tus usuarios.</p>
+              <h1 className="text-3xl font-bold mb-4 mt-3 ml-8">
+                Manejo de Usuarios
+              </h1>
+              <p className="ml-8 text-xl">
+                Aquí puedes crear, actualizar, eliminar y ver tus usuarios.
+              </p>
               <div className="ml-8 mt-6 flex flex-col items-center space-y-6 w-11/12">
                 <hr className="my-8 border-t-2 border-gray-300 w-3/4" />
-                <h2 className="text-2xl font-bold mt-4">Añadir Nuevo Usuario</h2>
-                <img src={iconUsuario} alt="usuario" className="w-40 mx-auto"></img>
+                <h2 className="text-2xl font-bold mt-4">
+                  Añadir Nuevo Usuario
+                </h2>
+                <img
+                  src={iconUsuario}
+                  alt="usuario"
+                  className="w-40 mx-auto"
+                ></img>
                 <div className="flex flex-col space-y-4 w-full max-w-2xl h-96">
                   <input
                     type="text"
@@ -199,7 +213,9 @@ const UsuariosPage = () => {
                       <tbody>
                         {filteredUsuarios.map((usuario, index) => (
                           <tr key={index} className="border-t border-gray-300">
-                            <td className="px-4 py-2 text-center">{usuario.email}</td>
+                            <td className="px-4 py-2 text-center">
+                              {usuario.email}
+                            </td>
                             <td className="px-4 py-2 text-center">
                               {editUsuarioEmail === usuario.email ? (
                                 <input

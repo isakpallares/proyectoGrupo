@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar.jsx";
 import HeaderAdmin from "../components/HeaderAdmin.jsx";
 import "../App.css";
-
-
+import axios from 'axios';
+import logoNegroN from "../assets/logoNegroN.png";
 const PropiedadesPage = () => {
   const [propiedades, setPropiedades] = useState([]);
   const [nuevaPropiedad, setNuevaPropiedad] = useState({

@@ -5,6 +5,11 @@ from rest_framework.response import Response
 from django.utils import timezone
 from .models import Propiedad, Unidad, Pago, Usuario
 from .serializers import PropiedadSerializer, UnidadSerializer,  PagoSerializer, UsuarioSerializer
+import json
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+from django.contrib.auth.hashers import check_password
 
 
 # ViewSet para Propiedad
@@ -12,8 +17,8 @@ class PropiedadViewSet(viewsets.ModelViewSet):
     queryset = Propiedad.objects.all()
     serializer_class = PropiedadSerializer
     def perform_create(self, serializer):
-        nombreEdificio = serializer.validated_data.get('numero_unidad',None)
-        if Propiedad.objects.filter(nombre_edificio=nombreEdificio).exists():
+        direccion = serializer.validated_data.get('direccion_propiedad',None)
+        if Propiedad.objects.filter(direccion_propiedad=direccion).exists():
             raise ValidationError("Ya existe esta propiedad.")
         serializer.save()
 
@@ -26,6 +31,9 @@ class UnidadViewSet(viewsets.ModelViewSet):
         if Unidad.objects.filter(numero_unidad=numeroUnidad).exists():
             raise ValidationError("Ya existe esta unidad.")
         serializer.save()
+      
+    
+
     
 # ViewSet para Pago
 
@@ -53,8 +61,22 @@ class PagoViewSet(viewsets.ModelViewSet):
 
         return super().update(request, *args, **kwargs)
 
-class UsuarioViewSet(viewsets.ModelViewSet):
-    queryset = Usuario.objects.all()
-    serializer_class = UsuarioSerializer
 
+@csrf_exempt
+@require_POST
+def login_usuario(request):
+    try:
+        data = json.loads(request.body)
+        email = data.get('email')
+        contraseña = data.get('password')  # Asegúrate de que este nombre coincida con el nombre del campo en el frontend
+        
+        # Busca al usuario en la base de datos
+        usuario = Usuario.objects.filter(email=email).first()
 
+        if usuario and check_password(contraseña, usuario.contraseña):  # Verifica la contraseña
+            return JsonResponse({"exists": True}, status=200)
+        else:
+            return JsonResponse({"exists": False}, status=400)
+
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Datos JSON inválidos"}, status=400)

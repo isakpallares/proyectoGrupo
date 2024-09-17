@@ -1,20 +1,20 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import logoNegroN from "../assets/logoNegroN.png";
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const navigate = useNavigate(); 
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(''); 
+    setError("");
 
     try {
-      
-      const response = await axios.post('http://localhost:8000/api/usuarios/', {
+      const response = await axios.post("http://localhost:8000/api/usuarios/", {
         email,
         password,
       });
@@ -23,17 +23,17 @@ const Login = () => {
         const userData = response.data;
 
         if (userData.exists) {
-          console.log('Usuario autenticado correctamente');
-          navigate('/dashboard');
+          console.log("Usuario autenticado correctamente");
+          navigate("/dashboard");
         } else {
-          setError('El usuario no existe. Por favor, regístrate.');
+          setError("El usuario no existe. Por favor, regístrate.");
         }
       }
     } catch (error) {
       if (error.response && error.response.status === 400) {
-        setError('Correo o contraseña incorrectos.');
+        setError("Correo o contraseña incorrectos.");
       } else {
-        setError('Ocurrió un error. Por favor, inténtalo de nuevo.');
+        setError("Ocurrió un error. Por favor, inténtalo de nuevo.");
       }
     }
   };
@@ -60,7 +60,10 @@ const Login = () => {
               />
             </div>
             <div className="mb-4">
-              <label htmlFor="password" className="block text-gray-700 mb-4 mt-6">
+              <label
+                htmlFor="password"
+                className="block text-gray-700 mb-4 mt-6"
+              >
                 Password
               </label>
               <input

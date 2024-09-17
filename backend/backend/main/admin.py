@@ -13,7 +13,7 @@ class PropiedadAdmin(admin.ModelAdmin):
 # Registro del modelo Unidad
 @admin.register(Unidad)
 class UnidadAdmin(admin.ModelAdmin):
-    list_display = ('id_propiedad', 'numero_unidad','nombre_inquilino','cedula_inquilino', 'telefono_inquilino', 'estado', 'coeficiente')
+    list_display = ('id_propiedad', 'numero_unidad','nombre_inquilino','cedula_inquilino', 'telefono_inquilino', 'coeficiente')
     search_fields = ['numero_unidad']
     list_filter = ['numero_unidad']
     ordering = ['numero_unidad']
@@ -26,7 +26,7 @@ class PagoAdmin(admin.ModelAdmin):
     ordering = ['-fecha_pago']
 @admin.register(Usuario)
 class UsuarioAdmin(admin.ModelAdmin):
-    list_display = ('contraseña', 'email')
+    list_display = ('password', 'email')
     search_fields = ['email']
     list_filter = ['email']
     ordering = ['email']

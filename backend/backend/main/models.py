@@ -17,7 +17,6 @@ class Unidad(models.Model):
     nombre_inquilino = models.CharField(max_length=150, blank=True, null=True)
     cedula_inquilino = models.CharField(max_length=50, blank=True, null=True)
     telefono_inquilino = models.CharField(max_length=50, blank=True, null=True)
-    estado = models.BooleanField(default=False)
     coeficiente = models.PositiveIntegerField(blank=True, null=True)
     
     def save(self, *args, **kwargs):
@@ -27,7 +26,7 @@ class Unidad(models.Model):
             self.coeficiente = (presupuesto_anual * cuota / 100) / 12
 
         super().save(*args, **kwargs)
-
+    
     def __str__(self):
         return f'{self.numero_unidad}'
 
@@ -49,7 +48,7 @@ class Pago(models.Model):
 
 class Usuario(models.Model):
     email = models.CharField(max_length = 255)
-    contraseña = models.CharField(max_length=15)
+    password = models.CharField(max_length=15)
 
     def __str__(self):
         return f'ingreso {self.email}'

@@ -55,8 +55,18 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
 ]
  
-CORS_ALLOWED_ORIGINS = [
-    # La URL de tu frontend React en desarrollo
+# CORS_ALLOWED_ORIGINS = [
+#     'http://localhost:5173/'
+# ]
+
+CORS_ALLOW_ALL_ORIGINS = True
+
+CORS_ALLOW_CREDENTIALS = True  # Permite el envío de cookies y credenciales
+CORS_ALLOW_HEADERS = [
+    'content-type',
+    'accept',
+    'x-requested-with',
+    'x-csrftoken',
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -88,7 +98,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'gestionaProp',
         'USER': 'root',
-        'PASSWORD': 'Isaac271204',
+        'PASSWORD': 'S3n42023*',
         'HOST': 'localhost',
         'PORT' : '3306',
     }
