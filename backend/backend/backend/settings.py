@@ -98,7 +98,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'gestionaProp',
         'USER': 'root',
-        'PASSWORD': 'S3n42023*',
+        'PASSWORD': '3929770',
         'HOST': 'localhost',
         'PORT' : '3306',
     }
