@@ -1,37 +1,14 @@
 import Sidebar from "../components/Sidebar";
 import HeaderDashboard from "../components/HeaderDashboard.jsx";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import "../App.css";
 
 function PagosPage() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [searchTermPago, setSearchTermPago] = useState(""); // Nuevo estado para búsqueda de pagos
-  const [pagos, setPagos] = useState([
-    {
-      idPago: 1,
-      fechaPago: "2024-01-15",
-      tipoPago: "Alquiler",
-      montoPago: "$2000",
-      idPropiedad: 1,
-      idUnidad: "1",
-      estado: false, 
-    },
-    {
-      idPago: 2,
-      fechaPago: "2024-02-15",
-      tipoPago: "Alquiler",
-      montoPago: "$3000",
-      idPropiedad: 2,
-      idUnidad: "2",
-      estado: true,
-    },
-  ]);
-
-  const [unidades, setUnidades] = useState([
-    { idPropiedad: 1, numeroUnidad: "1", nombreInquilino: "Juan Pérez", cedulaInquilino: 1, telefonoInquilino: 1 },
-    { idPropiedad: 2, numeroUnidad: "2", nombreInquilino: "Ana López", cedulaInquilino: 2, telefonoInquilino: 2 },
-  ]);
-
+  const [searchTermPago, setSearchTermPago] = useState("");
+  const [pagos, setPagos] = useState([]);
+  const [unidades, setUnidades] = useState([]);
   const [selectedUnidad, setSelectedUnidad] = useState(null);
   const [newPago, setNewPago] = useState({
     fechaPago: "",
@@ -39,66 +16,91 @@ function PagosPage() {
     montoPago: "",
   });
 
+  const fetchUnidades = async () => {
+    try {
+      const response = await axios.get("http://localhost:8000/api/unidades");
+      setUnidades(response.data);
+      console.log("Unidades:", response.data);
+    } catch (error) {
+      console.error("Error al obtener las unidades:", error);
+    }
+  };
+
+  const fetchPagos = async () => {
+    try {
+      const response = await axios.get("http://localhost:8000/api/pagos");
+      setPagos(response.data);
+      console.log("Pagos:", response.data);
+    } catch (error) {
+      console.error("Error al obtener los pagos:", error);
+    }
+  };
+
   const handleSearchUnidad = () => {
-    const unidad = unidades.find((unid) => unid.numeroUnidad === searchTerm);
+    console.log("Buscar unidad con número:", searchTerm);
+    const normalizedSearchTerm = searchTerm.trim().toLowerCase();
+    const unidad = unidades.find((unid) => 
+      unid.numero_unidad.toString().toLowerCase() === normalizedSearchTerm
+    );
+    console.log("Unidad encontrada:", unidad);
     setSelectedUnidad(unidad);
   };
 
-  const handleSearchPago = () => {
-    // Puedes agregar lógica aquí si deseas buscar en todos los pagos o filtrar más
-  };
-
-  const handleChangeState = (idPago) => {
-    setPagos((prevPagos) =>
-      prevPagos.map((pago) =>
-        pago.idPago === idPago
-          ? {
-              ...pago,
-              estado: !pago.estado,
-            }
-          : pago
-      )
-    );
-  };
-
-  const handleAddPago = () => {
-    if (!selectedUnidad) return;
-
-    const newPagoId = pagos.length ? Math.max(pagos.map(p => p.idPago)) + 1 : 1;
-
-    setPagos([
-      ...pagos,
-      {
-        idPago: newPagoId,
-        fechaPago: newPago.fechaPago,
-        tipoPago: newPago.tipoPago,
-        montoPago: newPago.montoPago,
-        idPropiedad: selectedUnidad.idPropiedad,
-        idUnidad: selectedUnidad.numeroUnidad,
-        estado: false,
-      },
-    ]);
-
-    setNewPago({
-      fechaPago: "",
-      tipoPago: "",
-      montoPago: "",
-    });
-  };
-
   const pagosDeUnidad = selectedUnidad
-    ? pagos.filter((pago) => pago.idUnidad === selectedUnidad.numeroUnidad)
+    ? pagos.filter((pago) => pago.id_unidad === selectedUnidad.numero_unidad)
     : [];
 
   const pagosFiltrados = pagosDeUnidad.filter((pago) =>
-    pago.idPago.toString().includes(searchTermPago) ||
-    pago.fechaPago.includes(searchTermPago) ||
-    pago.tipoPago.toLowerCase().includes(searchTermPago.toLowerCase()) ||
-    pago.montoPago.includes(searchTermPago)
+    pago.id_pago.toString().includes(searchTermPago) ||
+    pago.fecha_pago.includes(searchTermPago) ||
+    pago.tipo_pago.toLowerCase().includes(searchTermPago.toLowerCase()) ||
+    pago.monto_pago.includes(searchTermPago)
   );
-  const handleDeletePago = (idPago) => {
-    setPagos((prevPagos) => prevPagos.filter((pago) => pago.idPago !== idPago));
+
+  const handleChangeState = async (idPago) => {
+    try {
+      const pago = pagos.find(p => p.id_pago === idPago);
+      await axios.put(`http://localhost:8000/api/pagos/${idPago}/`, {
+        ...pago,
+        estado: !pago.estado,
+      });
+      fetchPagos();
+    } catch (error) {
+      console.error("Error al cambiar el estado del pago:", error);
+    }
   };
+  const handleAddPago = async () => {
+    const token = localStorage.getItem('token'); // Asegúrate de que esta variable esté correctamente definida
+  
+    try {
+      const response = await axios.post(
+        'http://localhost:8000/api/pagos/',
+        newPago, // Verifica que 'newPago' tenga el formato correcto
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          }
+        }
+      );
+      console.log('Pago agregado con éxito:', response.data);
+    } catch (error) {
+      console.error('Error al agregar el pago:', error.response?.data || error.message);
+    }
+  };
+  const handleDeletePago = async (idPago) => {
+    try {
+      await axios.delete(`http://localhost:8000/api/pagos/${idPago}/`);
+      setPagos(pagos.filter((pago) => pago.id_pago !== idPago));
+    } catch (error) {
+      console.error("Error al eliminar el pago:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchUnidades();
+    fetchPagos();
+  }, []);
 
   return (
     <div className="flex flex-col h-screen">
@@ -133,21 +135,20 @@ function PagosPage() {
                 >
                   Buscar Unidad
                 </button>
-                {/* Mostrar detalles de la unidad */}
                 {selectedUnidad && (
                   <div className="mt-8 p-4 bg-white shadow-md w-5/12 rounded-lg mx-auto">
                     <h3 className="text-xl font-bold mb-2">Detalles de Unidad</h3>
                     <p>
-                      <strong>Número de Unidad:</strong> {selectedUnidad.numeroUnidad}
+                      <strong>Número de Unidad:</strong> {selectedUnidad.numero_unidad}
                     </p>
                     <p>
-                      <strong>Nombre Inquilino:</strong> {selectedUnidad.nombreInquilino}
+                      <strong>Nombre Inquilino:</strong> {selectedUnidad.nombre_inquilino}
                     </p>
                     <p>
-                      <strong>Cédula Inquilino:</strong> {selectedUnidad.cedulaInquilino}
+                      <strong>Cédula Inquilino:</strong> {selectedUnidad.cedula_inquilino}
                     </p>
                     <p>
-                      <strong>Teléfono Inquilino:</strong> {selectedUnidad.telefonoInquilino}
+                      <strong>Teléfono Inquilino:</strong> {selectedUnidad.telefono_inquilino}
                     </p>
                   </div>
                 )}
@@ -155,7 +156,6 @@ function PagosPage() {
               <hr className="my-8 border-t-2 border-gray-300 w-3/4" />
             </div>
 
-            {/* Buscar pagos */}
             <div className="ml-8 mt-6 flex flex-col items-center space-y-6 w-11/12">
               <h2 className="text-2xl font-bold">Buscar Pagos</h2>
               <div className="flex flex-col space-y-4 w-full max-w-3xl">
@@ -169,7 +169,6 @@ function PagosPage() {
               </div>
             </div>
 
-            {/* Tabla de Pagos */}
             <div className="ml-8 mt-6 flex flex-col items-center space-y-6 w-11/12">
               <h2 className="text-2xl font-bold">Pagos</h2>
               <div className="w-3/4 mt-8">
@@ -190,13 +189,13 @@ function PagosPage() {
                     <tbody>
                       {pagosFiltrados.length > 0 ? (
                         pagosFiltrados.map((pago) => (
-                          <tr key={pago.idPago} className="border-t border-gray-300">
-                            <td className="px-4 py-2 text-center">{pago.idPago}</td>
-                            <td className="px-4 py-2 text-center">{pago.fechaPago}</td>
-                            <td className="px-4 py-2 text-center">{pago.tipoPago}</td>
-                            <td className="px-4 py-2 text-center">{pago.montoPago}</td>
-                            <td className="px-4 py-2 text-center">{pago.idPropiedad}</td>
-                            <td className="px-4 py-2 text-center">{pago.idUnidad}</td>
+                          <tr key={pago.id_pago} className="border-t border-gray-300">
+                            <td className="px-4 py-2 text-center">{pago.id_pago}</td>
+                            <td className="px-4 py-2 text-center">{pago.fecha_pago}</td>
+                            <td className="px-4 py-2 text-center">{pago.tipo_pago}</td>
+                            <td className="px-4 py-2 text-center">{pago.monto_pago}</td>
+                            <td className="px-4 py-2 text-center">{pago.id_propiedad}</td>
+                            <td className="px-4 py-2 text-center">{pago.id_unidad}</td>
                             <td className="px-4 py-2 text-center">
                               {pago.estado ? "Pagado" : "No Pagado"}
                             </td>
@@ -204,14 +203,13 @@ function PagosPage() {
                               <input
                                 type="checkbox"
                                 checked={pago.estado}
-                                onChange={() => handleChangeState(pago.idPago)}
+                                onChange={() => handleChangeState(pago.id_pago)}
                                 className="form-checkbox"
                               />
-                              
                             </td>
                             <td>
-                            <button
-                                onClick={() => handleDeletePago(pago.idPago)}
+                              <button
+                                onClick={() => handleDeletePago(pago.id_pago)}
                                 className="bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
                               >
                                 Eliminar
@@ -280,4 +278,3 @@ function PagosPage() {
 }
 
 export default PagosPage;
- 
