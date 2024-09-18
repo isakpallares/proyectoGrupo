@@ -12,15 +12,44 @@ from django.views.decorators.http import require_POST
 from django.contrib.auth.hashers import check_password
 
 
-# ViewSet para Propiedad
 class PropiedadViewSet(viewsets.ModelViewSet):
     queryset = Propiedad.objects.all()
     serializer_class = PropiedadSerializer
-    def perform_create(self, serializer):
-        direccion = serializer.validated_data.get('direccion_propiedad',None)
-        if Propiedad.objects.filter(direccion_propiedad=direccion).exists():
-            raise ValidationError("Ya existe esta propiedad.")
-        serializer.save()
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        propiedad = serializer.save()
+
+        numero_unidades = serializer.validated_data.get('numero_unidades')
+        presupuesto_anual = serializer.validated_data.get('Presupuesto')
+        cuota = serializer.validated_data.get('cuota')
+
+        if numero_unidades is None or presupuesto_anual is None or cuota is None:
+            return Response(
+                {"detail": "Faltan datos necesarios para crear la propiedad."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        coeficiente = (presupuesto_anual * cuota / 100) / 12
+
+        for i in range(1, numero_unidades + 1):
+            try:
+                Unidad.objects.create(
+                    id_propiedad=propiedad,
+                    numero_unidad=i,
+                    coeficiente=coeficiente,
+                )
+            except Exception as e:
+                return Response(
+                    {"detail": f"Error al crear unidad: {str(e)}"},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
+
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        
 
 # ViewSet para Unidad
 class UnidadViewSet(viewsets.ModelViewSet):
@@ -31,6 +60,16 @@ class UnidadViewSet(viewsets.ModelViewSet):
         if Unidad.objects.filter(numero_unidad=numeroUnidad).exists():
             raise ValidationError("Ya existe esta unidad.")
         serializer.save()
+
+    def update(self, request, *args, **kwargs):
+        try:
+            unidad = Unidad.objects.get(numero_unidad=kwargs['pk'])
+            serializer = self.get_serializer(unidad, data=request.data, partial=True)
+            serializer.is_valid(raise_exception=True)
+            self.perform_update(serializer)
+            return Response(serializer.data)
+        except Unidad.DoesNotExist:
+            return Response({'error': 'No unidad matches the given query'}, status=status.HTTP_404_NOT_FOUND)
       
     
 

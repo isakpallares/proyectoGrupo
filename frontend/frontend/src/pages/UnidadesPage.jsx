@@ -26,43 +26,6 @@ const UnidadesPage = () => {
     }));
   };
 
-  // Create a new unit
-  const handleCreateUnit = async () => {
-    try {
-      const { id_propiedad, numero_unidad } = nuevaUnidad;
-      if (!id_propiedad || !numero_unidad) {
-        console.error("ID de propiedad y número de unidad son requeridos");
-        return;
-      }
-
-      // Remove empty fields
-      const unitData = {
-        id_propiedad,
-        numero_unidad,
-        nombre_inquilino: "",
-        cedula_inquilino: "",
-        telefono_inquilino: "",
-        coeficiente: "",
-      };
-
-      await axios.post("http://localhost:8000/api/unidades/", unitData);
-      fetchUnidades(); // Refresh the list of units after creating a new one
-      // Clear the form if necessary
-      setNuevaUnidad({
-        id_propiedad: "",
-        numero_unidad: "",
-        nombre_inquilino: "",
-        cedula_inquilino: "",
-        telefono_inquilino: "",
-        coeficiente: "",
-      });
-    } catch (error) {
-      console.error(
-        "Error al crear la unidad:",
-        error.response ? error.response.data : error.message
-      );
-    }
-  };
 
   // Search for property by ID
   const handleSearch = async () => {
@@ -88,14 +51,15 @@ const UnidadesPage = () => {
     }
   };
 
-  // Update unit data
   const handleSaveChanges = async (numeroUnidad, updatedData) => {
     try {
+      console.log("Actualizando unidad con datos:", updatedData); 
+      console.log("Número de unidad que se intenta actualizar:", numeroUnidad);
       await axios.put(
         `http://localhost:8000/api/unidades/${numeroUnidad}/`,
         updatedData
       );
-      fetchUnidades(); // Refresh list after saving changes
+      fetchUnidades(); 
     } catch (error) {
       console.error(
         "Error al guardar los cambios:",
@@ -177,34 +141,7 @@ const UnidadesPage = () => {
               </div>
               <hr className="my-8 border-t-2 border-gray-300 w-3/4" />
 
-              {/* Formulario para crear nueva unidad */}
-              <div className="mt-8 p-4 bg-white shadow-md w-5/12 rounded-lg mx-auto">
-                <h2 className="text-2xl font-bold mb-4">Crear Nueva Unidad</h2>
-                <div className="flex flex-col space-y-4">
-                  <input
-                    type="text"
-                    name="id_propiedad"
-                    placeholder="ID de Propiedad"
-                    value={nuevaUnidad.id_propiedad}
-                    onChange={handleNuevaUnidadChange}
-                    className="px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-oscuro focus:border-oscuro"
-                  />
-                  <input
-                    type="text"
-                    name="numero_unidad"
-                    placeholder="Número de Unidad"
-                    value={nuevaUnidad.numero_unidad}
-                    onChange={handleNuevaUnidadChange}
-                    className="px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-oscuro focus:border-oscuro"
-                  />
-                  <button
-                    onClick={handleCreateUnit}
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                  >
-                    Crear Unidad
-                  </button>
-                </div>
-              </div>
+              
 
               {/* Tabla de Unidades Disponibles */}
               <div className="ml-8 mt-6 flex flex-col items-center space-y-6 w-11/12">
@@ -299,7 +236,7 @@ const UnidadesPage = () => {
                                       nombre_inquilino: unidad.nombre_inquilino,
                                       cedula_inquilino: unidad.cedula_inquilino,
                                       telefono_inquilino:
-                                        unidad.telefono_inquilino,
+                                      unidad.telefono_inquilino,
                                     })
                                   }
                                   className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"

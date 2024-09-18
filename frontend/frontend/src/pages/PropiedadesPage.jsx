@@ -34,9 +34,16 @@ const PropiedadesPage = () => {
   // Añadir nueva propiedad (POST)
   const handleAddProperty = async () => {
     try {
+      console.log('Datos enviados:', nuevaPropiedad); // Imprime los datos para verificar
       const response = await axios.post('http://localhost:8000/api/propiedades/', nuevaPropiedad);
       setPropiedades([...propiedades, response.data]);
-      setNuevaPropiedad({ nombre_propiedad: '', direccion_propiedad: '', numero_unidades: '', cuota: '', Presupuesto: '' });
+      setNuevaPropiedad({
+        nombre_propiedad: '',
+        direccion_propiedad: '',
+        numero_unidades: '',
+        cuota: '',
+        Presupuesto: ''
+      });
     } catch (error) {
       console.error('Error al añadir propiedad:', error);
     }

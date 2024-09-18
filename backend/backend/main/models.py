@@ -18,7 +18,8 @@ class Unidad(models.Model):
     cedula_inquilino = models.CharField(max_length=50, blank=True, null=True)
     telefono_inquilino = models.CharField(max_length=50, blank=True, null=True)
     coeficiente = models.PositiveIntegerField(blank=True, null=True)
-    
+    estado = models.BooleanField(default=False, blank=True, null=True)
+
     def save(self, *args, **kwargs):
         if self.id_propiedad:
             presupuesto_anual = self.id_propiedad.Presupuesto
@@ -26,7 +27,7 @@ class Unidad(models.Model):
             self.coeficiente = (presupuesto_anual * cuota / 100) / 12
 
         super().save(*args, **kwargs)
-    
+
     def __str__(self):
         return f'{self.numero_unidad}'
 

@@ -13,7 +13,7 @@ class PropiedadAdmin(admin.ModelAdmin):
 # Registro del modelo Unidad
 @admin.register(Unidad)
 class UnidadAdmin(admin.ModelAdmin):
-    list_display = ('id_propiedad', 'numero_unidad','nombre_inquilino','cedula_inquilino', 'telefono_inquilino', 'coeficiente')
+    list_display = ('id_propiedad', 'numero_unidad','nombre_inquilino','cedula_inquilino', 'telefono_inquilino', 'coeficiente','estado')
     search_fields = ['numero_unidad']
     list_filter = ['numero_unidad']
     ordering = ['numero_unidad']
