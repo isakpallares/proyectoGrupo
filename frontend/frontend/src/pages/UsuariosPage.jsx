@@ -17,7 +17,6 @@ const UsuariosPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredUsuarios, setFilteredUsuarios] = useState([]);
 
-  // Autenticación básica para ingresar al panel
   const handlePasswordSubmit = (e) => {
     e.preventDefault();
     if (inputPassword === "tu_contraseña") {
@@ -47,7 +46,7 @@ const UsuariosPage = () => {
     try {
       await axios.post("http://localhost:8000/api/usuarios", newUsuario);
       fetchUsuarios(); // Refrescar lista de usuarios
-      setNewUsuario({ email: "", contraseña: "" }); // Limpiar el formulario
+      setNewUsuario({ email: "", password: "" }); // Limpiar el formulario
     } catch (error) {
       console.error("Error al añadir usuario:", error);
     }
@@ -66,7 +65,7 @@ const UsuariosPage = () => {
   // Editar usuario
   const handleEditClick = (usuario) => {
     setEditUsuarioEmail(usuario.email);
-    setEditFormData({ contraseña: usuario.contraseña });
+    setEditFormData({ password: usuario.password });
   };
 
   // Guardar cambios de edición
@@ -221,12 +220,12 @@ const UsuariosPage = () => {
                                 <input
                                   type="text"
                                   name="contraseña"
-                                  value={editFormData.contraseña}
+                                  value={editFormData.password}
                                   onChange={handleInputChange}
                                   className="border px-2"
                                 />
                               ) : (
-                                usuario.contraseña
+                                usuario.password
                               )}
                             </td>
                             <td className="px-4 py-2 text-center">

@@ -101,21 +101,8 @@ class PagoViewSet(viewsets.ModelViewSet):
         return super().update(request, *args, **kwargs)
 
 
-@csrf_exempt
-@require_POST
-def login_usuario(request):
-    try:
-        data = json.loads(request.body)
-        email = data.get('email')
-        contraseña = data.get('password')  # Asegúrate de que este nombre coincida con el nombre del campo en el frontend
-        
-        # Busca al usuario en la base de datos
-        usuario = Usuario.objects.filter(email=email).first()
 
-        if usuario and check_password(contraseña, usuario.contraseña):  # Verifica la contraseña
-            return JsonResponse({"exists": True}, status=200)
-        else:
-            return JsonResponse({"exists": False}, status=400)
 
-    except json.JSONDecodeError:
-        return JsonResponse({"error": "Datos JSON inválidos"}, status=400)
+class usuarioViewSet(viewsets.ModelViewSet):
+    queryset = Usuario.objects.all()
+    serializer_class = UsuarioSerializer
