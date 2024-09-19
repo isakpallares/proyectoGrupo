@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.hashers import make_password, check_password
 # Modelo para Propiedades
 class Propiedad(models.Model):
     nombre_propiedad = models.CharField(max_length=255)

@@ -10,7 +10,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.contrib.auth.hashers import check_password
-
+from rest_framework.decorators import api_view
 
 class PropiedadViewSet(viewsets.ModelViewSet):
     queryset = Propiedad.objects.all()
@@ -106,3 +106,25 @@ class PagoViewSet(viewsets.ModelViewSet):
 class usuarioViewSet(viewsets.ModelViewSet):
     queryset = Usuario.objects.all()
     serializer_class = UsuarioSerializer
+
+
+@api_view(['POST'])
+def login(request):
+    email = request.data.get('email')
+    password = request.data.get('password')
+
+    usuarios = Usuario.objects.filter(email=email)
+
+    if usuarios.exists():
+        if usuarios.count() > 1:
+            return Response({'exists': False, 'message': 'Hay múltiples usuarios con este correo. Contacta al soporte.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        usuario = usuarios.first()  
+
+        if usuario.password == password:
+            return Response({'exists': True, 'message': 'Usuario autenticado correctamente'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'exists': False, 'message': 'Contraseña incorrecta'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    return Response({'exists': False, 'message': 'El usuario no existe'}, status=status.HTTP_400_BAD_REQUEST)
+

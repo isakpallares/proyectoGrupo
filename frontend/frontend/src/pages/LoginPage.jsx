@@ -12,16 +12,14 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    console.log("Usuario autenticado");
     try {
-      const response = await axios.post("http://localhost:8000/api/usuarios/", {
+      const response = await axios.post("http://localhost:8000/login/", {
         email,
         password,
       });
-      console.log("aaa")
       if (response.status === 200) {
         const userData = response.data;
-
+  
         if (userData.exists) {
           console.log("Usuario autenticado correctamente");
           navigate("/dashboard");

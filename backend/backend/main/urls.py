@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import PropiedadViewSet, UnidadViewSet,PagoViewSet, usuarioViewSet
+from .views import PropiedadViewSet, UnidadViewSet,PagoViewSet, usuarioViewSet, login
 
 router = DefaultRouter()
 router.register(r'propiedades', PropiedadViewSet)
@@ -11,5 +11,5 @@ router.register(r'usuarios', usuarioViewSet)
 
 urlpatterns = [ 
     path('api/', include(router.urls)),
-
+    path('login/', login, name='login'),
 ]

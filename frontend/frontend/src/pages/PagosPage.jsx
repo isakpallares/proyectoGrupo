@@ -138,6 +138,10 @@ function PagosPage() {
                 {selectedUnidad && (
                   <div className="mt-8 p-4 bg-white shadow-md w-5/12 rounded-lg mx-auto">
                     <h3 className="text-xl font-bold mb-2">Detalles de Unidad</h3>
+                    
+                    <p>
+                      <strong>Propiedad:</strong> {selectedUnidad.id_propiedad}
+                    </p>
                     <p>
                       <strong>Número de Unidad:</strong> {selectedUnidad.numero_unidad}
                     </p>
