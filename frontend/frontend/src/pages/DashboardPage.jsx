@@ -52,19 +52,24 @@ const optionsBarLine = {
 function DashboardPage() {
   const [dataPagos, setDataPagos] = useState([]);
   const [dataPropiedades, setDataPropiedades] = useState([]);
+  const [dataUnidades, setDataUnidades] = useState([]);
 
-  // Obtener los datos desde la API al montar el componente
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const pagosResponse = await axios.get("http://localhost:8000/api/pagos");
+        const pagosResponse = await axios.get(
+          "http://localhost:8000/api/pagos"
+        );
         const propiedadesResponse = await axios.get(
           "http://localhost:8000/api/propiedades"
         );
+        const unidadesResponse = await axios.get(
+          "http://localhost:8000/api/unidades"
+        );
 
-        // Actualizar los datos en los estados
         setDataPagos(pagosResponse.data);
         setDataPropiedades(propiedadesResponse.data);
+        setDataUnidades(unidadesResponse.data);
       } catch (error) {
         console.error("Error al obtener los datos:", error);
       }
@@ -73,15 +78,34 @@ function DashboardPage() {
     fetchData();
   }, []);
 
-  // Datos para los gráficos
-  const labels = ["Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+  const getMonthlyPayments = (data) => {
+    const monthlyPayments = Array(12).fill(0);
+    data.forEach((pago) => {
+      const month = new Date(pago.fecha_pago).getMonth();
+      if (month >= 0 && month < 12) {
+        monthlyPayments[month]++;
+      }
+    });
+    return monthlyPayments;
+  };
+
+  const monthlyData = getMonthlyPayments(dataPagos);
+  const labelsBar = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio"];
+  const labelsLine = [
+    "Julio",
+    "Agosto",
+    "Septiembre",
+    "Octubre",
+    "Noviembre",
+    "Diciembre",
+  ];
 
   const dataBar = {
-    labels: labels,
+    labels: labelsBar,
     datasets: [
       {
-        label: "Pagos por mes",
-        data: dataPagos.map((pago) => pago.monto), // Aquí mapeamos los pagos
+        label: "Pagos en los primeros 6 meses",
+        data: monthlyData.slice(0, 6),
         backgroundColor: ["rgba(153, 102, 255, 0.2)"],
         borderColor: ["rgba(153, 102, 255, 1)"],
         borderWidth: 1,
@@ -90,11 +114,11 @@ function DashboardPage() {
   };
 
   const dataLine = {
-    labels: labels,
+    labels: labelsLine,
     datasets: [
       {
-        label: "Propiedades registradas",
-        data: dataPropiedades.map((propiedad) => propiedad.valor), // Aquí mapeamos las propiedades
+        label: "Cantidad de Pagos (últimos 6 meses)",
+        data: monthlyData.slice(6),
         borderColor: "rgba(54, 162, 235, 1)",
         backgroundColor: "rgba(54, 162, 235, 0.2)",
         borderWidth: 2,
@@ -103,13 +127,19 @@ function DashboardPage() {
   };
 
   const dataDoughnut = {
-    labels: ["Pagos", "Propiedades"],
+    labels: ["Pagos Pagados", "Pagos No Pagados"],
     datasets: [
       {
-        label: "Distribución de datos",
-        data: [dataPagos.length, dataPropiedades.length], // Cantidad de pagos vs propiedades
-        backgroundColor: ["rgba(153, 102, 255, 0.3)", "rgba(54, 162, 235, 0.3)"],
-        borderColor: ["rgba(153, 102, 255, 1)", "rgba(54, 162, 235, 1)"],
+        label: "Distribución de Pagos",
+        data: [
+          dataPagos.filter((pago) => pago.estado === true).length,
+          dataPagos.filter((pago) => pago.estado === false).length,
+        ],
+        backgroundColor: [
+          "rgba(54, 162, 235, 0.2)",
+          "rgba(153, 102, 255, 0.2)",
+        ],
+        borderColor: ["rgba(54, 162, 235, 1)", "rgba(153, 102, 255, 1)"],
         borderWidth: 1,
       },
     ],
@@ -130,13 +160,16 @@ function DashboardPage() {
                 <h2 className="text-xl font-bold mb-6">Resumen</h2>
 
                 <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-4 gap-8">
-                  {/* Tarjetas */}
                   <div className="bg-white rounded-lg p-6 shadow-md">
                     <h3 className="text-xl font-semibold mb-4">
                       Total de Pagos
                     </h3>
                     <p className="text-4xl font-bold mb-4">
-                      ${dataPagos.reduce((sum, pago) => sum + pago.monto, 0)}
+                      $
+                      {dataPagos.reduce(
+                        (sum, pago) => sum + (pago.monto_pago || 0),
+                        0
+                      )}
                     </p>
                     <p className="text-sm text-gray-500">
                       Total de pagos registrados.
@@ -150,35 +183,52 @@ function DashboardPage() {
                     <p className="text-4xl font-bold mb-4">
                       {dataPropiedades.length}
                     </p>
-                    <p className="text-sm text-gray-500">
-                      Número total de propiedades.
+                  </div>
+
+                  <div className="bg-white rounded-lg p-6 shadow-md">
+                    <h3 className="text-xl font-semibold mb-4">
+                      Unidades Registradas
+                    </h3>
+                    <p className="text-4xl font-bold mb-4">
+                      {dataUnidades.length}
+                    </p>
+                  </div>
+
+                  <div className="bg-white rounded-lg p-6 shadow-md">
+                    <h3 className="text-xl font-semibold mb-4">
+                      Cantidad de Pagos Registrados
+                    </h3>
+                    <p className="text-4xl font-bold mb-4">
+                      {dataPagos.length}
                     </p>
                   </div>
                 </div>
 
-                {/* Espacio para gráficos */}
                 <h2 className="text-xl font-bold mb-4 mt-8">Gráficos</h2>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                  {/* Gráfico de barras */}
-                  <div className="p-6 bg-white rounded-lg shadow-md">
-                    <h2 className="text-xl font-semibold mb-4">Bar Chart</h2>
-                    <div className="w-full">
-                      <Bar data={dataBar} options={optionsBarLine} />
+                  <div className="grid grid-cols-1 gap-8">
+                    <div className="p-6 bg-white rounded-lg shadow-md">
+                      <h2 className="text-xl font-semibold mb-4">
+                        Gráfico de Barras
+                      </h2>
+                      <div className="w-full">
+                        <Bar data={dataBar} options={optionsBarLine} />
+                      </div>
+                    </div>
+
+                    <div className="p-6 bg-white rounded-lg shadow-md">
+                      <h2 className="text-xl font-semibold mb-4">
+                        Gráfico de Líneas
+                      </h2>
+                      <div className="w-full">
+                        <Line data={dataLine} options={optionsBarLine} />
+                      </div>
                     </div>
                   </div>
 
-                  {/* Gráfico de líneas */}
-                  <div className="p-6 bg-white rounded-lg shadow-md">
-                    <h2 className="text-xl font-semibold mb-4">Line Chart</h2>
-                    <div className="w-full">
-                      <Line data={dataLine} options={optionsBarLine} />
-                    </div>
-                  </div>
-
-                  {/* Gráfico circular */}
                   <div className="p-6 bg-white rounded-lg shadow-md">
                     <h2 className="text-xl font-semibold mb-4">
-                      Doughnut Chart
+                      Gráfico Circular
                     </h2>
                     <div className="w-full">
                       <Doughnut data={dataDoughnut} options={optionsBarLine} />

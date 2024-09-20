@@ -8,6 +8,7 @@ const UnidadesPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedPropiedad, setSelectedPropiedad] = useState(null);
   const [unidadesDisponibles, setUnidadesDisponibles] = useState([]);
+  const [filteredUnidades, setFilteredUnidades] = useState([]); // Nuevo estado para unidades filtradas
   const [nuevaUnidad, setNuevaUnidad] = useState({
     id_propiedad: "",
     numero_unidad: "",
@@ -26,7 +27,6 @@ const UnidadesPage = () => {
     }));
   };
 
-
   // Search for property by ID
   const handleSearch = async () => {
     try {
@@ -34,9 +34,15 @@ const UnidadesPage = () => {
         `http://localhost:8000/api/propiedades/${searchTerm}`
       );
       setSelectedPropiedad(response.data);
+      // Filtrar las unidades disponibles para mostrar solo las de la propiedad seleccionada
+      const unidadesFiltradas = unidadesDisponibles.filter(
+        (unidad) => unidad.id_propiedad === response.data.id
+      );
+      setFilteredUnidades(unidadesFiltradas);
     } catch (error) {
       console.error("Error al buscar la propiedad:", error);
       setSelectedPropiedad(null);
+      setFilteredUnidades([]); // Limpiar las unidades filtradas si hay un error
     }
   };
 
@@ -46,17 +52,18 @@ const UnidadesPage = () => {
       const response = await axios.get("http://localhost:8000/api/unidades");
       console.log("Datos de unidades:", response.data); // Verify here
       setUnidadesDisponibles(response.data); // Adjust according to data format
+      setFilteredUnidades(response.data); // Inicializar también las unidades filtradas
     } catch (error) {
       console.error("Error al obtener las unidades:", error);
     }
   };
 
-  const handleSaveChanges = async (numeroUnidad, updatedData) => {
+  const handleSaveChanges = async (id, updatedData) => {
     try {
       console.log("Actualizando unidad con datos:", updatedData); 
-      console.log("Número de unidad que se intenta actualizar:", numeroUnidad);
+      console.log("Número de unidad que se intenta actualizar:", id);
       await axios.put(
-        `http://localhost:8000/api/unidades/${numeroUnidad}/`,
+        `http://localhost:8000/api/unidades/${id}/`,
         updatedData
       );
       fetchUnidades(); 
@@ -69,10 +76,10 @@ const UnidadesPage = () => {
   };
 
   // Handle input changes in the table
-  const handleInputChange = (numeroUnidad, field, value) => {
-    setUnidadesDisponibles((prevUnidades) =>
+  const handleInputChange = (id, field, value) => {
+    setFilteredUnidades((prevUnidades) =>
       prevUnidades.map((u) =>
-        u.numero_unidad === numeroUnidad ? { ...u, [field]: value } : u
+        u.numero_unidad === id ? { ...u, [field]: value } : u
       )
     );
   };
@@ -141,8 +148,6 @@ const UnidadesPage = () => {
               </div>
               <hr className="my-8 border-t-2 border-gray-300 w-3/4" />
 
-              
-
               {/* Tabla de Unidades Disponibles */}
               <div className="ml-8 mt-6 flex flex-col items-center space-y-6 w-11/12">
                 <h2 className="text-2xl font-bold">Unidades Disponibles</h2>
@@ -162,16 +167,15 @@ const UnidadesPage = () => {
                           </th>
                           <th className="px-4 py-2 text-center">Cédula</th>
                           <th className="px-4 py-2 text-center">Teléfono</th>
-                          <th className="px-4 py-2 text-center">Coeficiente</th>
+                          <th className="px-4 py-2 text-center">Cuota</th>
                           <th className="px-4 py-2 text-center">
                             Acciones
-                          </th>{" "}
-                          {/* Nueva columna */}
+                          </th>
                         </tr>
                       </thead>
                       <tbody>
-                        {unidadesDisponibles.length > 0 ? (
-                          unidadesDisponibles.map((unidad) => (
+                        {filteredUnidades.length > 0 ? (
+                          filteredUnidades.map((unidad) => (
                             <tr
                               key={unidad.numero_unidad}
                               className="border-t border-gray-300"
@@ -231,12 +235,10 @@ const UnidadesPage = () => {
                                 <button
                                   onClick={() =>
                                     handleSaveChanges(unidad.numero_unidad, {
-                                      numero_unidad: unidad.numero_unidad,
                                       id_propiedad: unidad.id_propiedad,
                                       nombre_inquilino: unidad.nombre_inquilino,
                                       cedula_inquilino: unidad.cedula_inquilino,
-                                      telefono_inquilino:
-                                      unidad.telefono_inquilino,
+                                      telefono_inquilino: unidad.telefono_inquilino,
                                     })
                                   }
                                   className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
@@ -249,7 +251,7 @@ const UnidadesPage = () => {
                         ) : (
                           <tr>
                             <td
-                              colSpan="8"
+                              colSpan="7"
                               className="px-4 py-2 text-center text-gray-500"
                             >
                               No hay unidades disponibles.

@@ -1,9 +1,11 @@
 import Sidebar from "../components/Sidebar";
 
-import HeaderFinanzas from "../components/HeaderFinanzas.jsx";
+
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "../App.css";
+import HeaderDashboard from "../components/HeaderDashboard.jsx";
+
 
 function PagosPage() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -31,12 +33,13 @@ function PagosPage() {
   const fetchPagos = async () => {
     try {
       const response = await axios.get("http://localhost:8000/api/pagos");
+      console.log("Pagos:", response.data); // Verifica aquí
       setPagos(response.data);
-      console.log("Pagos:", response.data);
     } catch (error) {
       console.error("Error al obtener los pagos:", error);
     }
   };
+
 
   const handleSearchUnidad = () => {
     const normalizedSearchTerm = searchTerm.trim().toLowerCase();
@@ -50,18 +53,18 @@ function PagosPage() {
     const token = localStorage.getItem('token');
     
     try {
-      const response = await axios.post(
-        'http://localhost:8000/api/pagos/',
+       const response = await axios.post(
+        "http://localhost:8000/api/pagos/",
         {
           ...newPago,
-          numero_unidad: selectedUnidad?.numero_unidad,
           id_propiedad: selectedUnidad.id_propiedad,
+            id_unidad: selectedUnidad.numero_unidad, // Asegúrate de incluir esto
         },
         {
           headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          }
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         }
       );
       console.log('Pago agregado con éxito:', response.data);
@@ -69,11 +72,6 @@ function PagosPage() {
     } catch (error) {
       console.error('Error al agregar el pago:', error.response?.data || error.message);
     }
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setNewPago((prev) => ({ ...prev, [name]: value }));
   };
 
   useEffect(() => {
@@ -121,7 +119,7 @@ function PagosPage() {
 
 
   const pagosDeUnidad = selectedUnidad
-    ? pagos.filter((pago) => pago.idUnidad === selectedUnidad.numeroUnidad)
+    ? pagos.filter((pago) => pago.id_unidad === selectedUnidad.numero_unidad)
     : [];
 
   const pagosFiltrados = pagosDeUnidad.filter((pago) =>
@@ -132,16 +130,20 @@ function PagosPage() {
   return (
     <div className="flex m-0 h-screen">
       <Sidebar />
-      <div className="flex-1 flex flex-col">
-        <HeaderFinanzas />
+      <div className="flex-1">
+        <HeaderDashboard />
         <main className="ml-44 bg-gray-100 pt-8 pb-40">
           <h1 className="text-3xl font-bold mb-4 mt-3 ml-8">Manejo de Pagos</h1>
-          <p className="ml-8 text-xl">Aquí puedes administrar los pagos de tus propiedades.</p>
-  
+          <p className="ml-8 text-xl">
+            Aquí puedes administrar los pagos de tus propiedades.
+          </p>
+
           {/* Buscar Unidad */}
           <div className="ml-8 mt-6 flex flex-col items-center space-y-6 w-11/12">
             <hr className="my-8 border-t-2 border-gray-300 w-3/4" />
-            <h2 className="text-2xl font-bold mt-4">Digite el Número de la Unidad</h2>
+            <h2 className="text-2xl font-bold mt-4">
+              Digite el Número de la Unidad
+            </h2>
             <div className="flex flex-col space-y-4 w-full max-w-3xl h-96">
               <input
                 type="text"
@@ -160,18 +162,29 @@ function PagosPage() {
               {selectedUnidad && (
                 <div className="mt-8 p-4 bg-white shadow-md w-5/12 rounded-lg mx-auto">
                   <h3 className="text-xl font-bold mb-2">Detalles de Unidad</h3>
-                  
-                  <p><strong>Número de Unidad:</strong> {selectedUnidad.numero_unidad}</p>
-                  <p><strong>Nombre Inquilino:</strong> {selectedUnidad.nombre_inquilino}</p>
-                  <p><strong>Cédula Inquilino:</strong> {selectedUnidad.cedula_inquilino}</p>
-                  <p><strong>Teléfono Inquilino:</strong> {selectedUnidad.telefono_inquilino}</p>
+
+                  <p>
+                    <strong>Número de Unidad:</strong>{" "}
+                    {selectedUnidad.numero_unidad}
+                  </p>
+                  <p>
+                    <strong>Nombre Inquilino:</strong>{" "}
+                    {selectedUnidad.nombre_inquilino}
+                  </p>
+                  <p>
+                    <strong>Cédula Inquilino:</strong>{" "}
+                    {selectedUnidad.cedula_inquilino}
+                  </p>
+                  <p>
+                    <strong>Teléfono Inquilino:</strong>{" "}
+                    {selectedUnidad.telefono_inquilino}
+                  </p>
                 </div>
               )}
             </div>
             <hr className="my-8 border-t-2 border-gray-300 w-3/4" />
           </div>
-  
-  
+
           {/* Tabla de Pagos */}
           <div className="ml-8 mt-6 flex flex-col items-center space-y-6 w-11/12">
             <h2 className="text-2xl font-bold">Pagos</h2>
@@ -187,78 +200,109 @@ function PagosPage() {
                       <th className="px-4 py-2 text-center">ID Propiedad</th>
                       <th className="px-4 py-2 text-center">ID Unidad</th>
                       <th className="px-4 py-2 text-center">Estado</th>
-                      <th className="px-4 py-2 text-center" colSpan={2}>Acciones</th>
+                      <th className="px-4 py-2 text-center" colSpan={2}>
+                        Acciones
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
-  {pagosFiltrados.length > 0 ? (
-    pagosFiltrados.map((pago) => (
-      <tr key={pago.id_pago} className="border-t border-gray-300">
-        <td className="px-4 py-2 text-center">{pago.id_pago}</td>
-        <td className="px-4 py-2 text-center">{pago.fecha_pago}</td>
-        <td className="px-4 py-2 text-center">{pago.tipo_pago}</td>
-        <td className="px-4 py-2 text-center">{pago.monto_pago}</td>
-        <td className="px-4 py-2 text-center">{pago.id_propiedad}</td>
-        <td className="px-4 py-2 text-center">{selectedUnidad.numero_unidad}</td>
-        <td className="px-4 py-2 text-center">
-          {pago.estado ? "Pagado" : "No Pagado"}
-        </td>
-        <td className="px-4 py-2 text-center">
-          <input
-            type="checkbox"
-            checked={pago.estado}
-            onChange={() => handleChangeState(pago.id_pago)} // Cambiar estado localmente
-            className="form-checkbox"
-          />
-        </td>
-      </tr>
-    ))
-  ) : (
-    <tr>
-      <td colSpan="8" className="px-4 py-2 text-center text-gray-500">
-        No hay pagos para esta búsqueda.
-      </td>
-    </tr>
-  )}
-</tbody>
-
+                    {pagosFiltrados.length > 0 ? (
+                      pagosFiltrados.map((pago) => (
+                        <tr
+                          key={pago.id_pago}
+                          className="border-t border-gray-300"
+                        >
+                          <td className="px-4 py-2 text-center">
+                            {pago.id_pago}
+                          </td>
+                          <td className="px-4 py-2 text-center">
+                            {pago.fecha_pago}
+                          </td>
+                          <td className="px-4 py-2 text-center">
+                            {pago.tipo_pago}
+                          </td>
+                          <td className="px-4 py-2 text-center">
+                            {pago.monto_pago}
+                          </td>
+                          <td className="px-4 py-2 text-center">
+                            {pago.id_propiedad}
+                          </td>
+                          <td className="px-4 py-2 text-center">
+                            {pago.id_unidad}
+                          </td>
+                          <td className="px-4 py-2 text-center">
+                            {pago.estado ? "Pagado" : "No Pagado"}
+                          </td>
+                          <td className="px-4 py-2 text-center">
+                            <input
+                              type="checkbox"
+                              checked={pago.estado}
+                              onChange={() => handleChangeState(pago.id_pago)} // Cambiar estado localmente
+                              className="form-checkbox"
+                            />
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td
+                          colSpan="8"
+                          className="px-4 py-2 text-center text-gray-500"
+                        >
+                          No hay pagos para esta búsqueda.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
                 </table>
               </div>
             </div>
           </div>
-  
+
           {/* Formulario para agregar nuevo pago */}
           {selectedUnidad && (
             <div className="ml-8 mt-8 flex flex-col items-center space-y-6 w-11/12">
               <h2 className="text-2xl font-bold">Agregar Pago</h2>
               <div className="w-3/4 max-w-3xl">
                 <div className="flex flex-col space-y-4">
-                <input
+                  <input
                     type="text"
                     placeholder="ID del pago"
                     value={newPago.id_pago}
-                    onChange={(e) => setNewPago({ ...newPago, id_pago : e.target.value })}
+                    onChange={(e) =>
+                      setNewPago({ ...newPago, id_pago: e.target.value })
+                    }
                     className="px-4 py-2 border rounded"
                   />
                   <input
                     type="date"
                     placeholder="Fecha de Pago"
                     value={newPago.fecha_pago}
-                    onChange={(e) => setNewPago({ ...newPago, fecha_pago: e.target.value })}
+                    onChange={(e) =>
+                      setNewPago({ ...newPago, fecha_pago: e.target.value })
+                    }
                     className="px-4 py-2 border rounded"
                   />
-                  <input
-                    type="text"
-                    placeholder="Tipo de Pago"
+                  <select
                     value={newPago.tipo_pago}
-                    onChange={(e) => setNewPago({ ...newPago, tipo_pago: e.target.value })}
+                    onChange={(e) =>
+                      setNewPago({ ...newPago, tipo_pago: e.target.value })
+                    }
                     className="px-4 py-2 border rounded"
-                  />
+                  >
+                    <option value="" disabled>
+                      Seleccione el Tipo de Pago
+                    </option>
+                    <option value="mantenimiento">Mantenimiento</option>
+                    <option value="servicios">Servicios</option>
+                  </select>
                   <input
                     type="text"
                     placeholder="Monto de Pago"
                     value={newPago.monto_pago}
-                    onChange={(e) => setNewPago({ ...newPago, monto_pago: e.target.value })}
+                    onChange={(e) =>
+                      setNewPago({ ...newPago, monto_pago: e.target.value })
+                    }
                     className="px-4 py-2 border rounded"
                   />
                   <button

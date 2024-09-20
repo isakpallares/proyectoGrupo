@@ -62,15 +62,6 @@ class UnidadViewSet(viewsets.ModelViewSet):
             raise ValidationError("Ya existe esta unidad.")
         serializer.save()
 
-    def update(self, request, *args, **kwargs):
-        try:
-            unidad = Unidad.objects.get(numero_unidad=kwargs['pk'])
-            serializer = self.get_serializer(unidad, data=request.data, partial=True)
-            serializer.is_valid(raise_exception=True)
-            self.perform_update(serializer)
-            return Response(serializer.data)
-        except Unidad.DoesNotExist:
-            return Response({'error': 'No unidad matches the given query'}, status=status.HTTP_404_NOT_FOUND)
         
     @action(detail=True, methods=['patch'])
     def cambiar_estado(self, request, pk=None):
@@ -104,20 +95,9 @@ class PagoViewSet(viewsets.ModelViewSet):
         
         if fecha_pago:
             fecha_pago = timezone.datetime.strptime(fecha_pago, '%Y-%m-%d').date()
-            if fecha_pago < timezone.now().date():
-                raise ValidationError({"detail": "El pago ya ha vencido."})
         
         return super().create(request, *args, **kwargs)
     
-    def update(self, request, *args, **kwargs):
-        fecha_pago = request.data.get('fecha_pago')
-
-        if fecha_pago:
-            fecha_pago = timezone.datetime.strptime(fecha_pago, '%Y-%m-%d').date()
-            if fecha_pago < timezone.now().date():
-                raise ValidationError({"detail": "El pago ya ha vencido y no puede ser actualizado."})
-
-        return super().update(request, *args, **kwargs)
 
 
 
