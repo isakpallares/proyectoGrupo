@@ -7,6 +7,7 @@ from .models import Propiedad, Unidad, Pago, Usuario
 from .serializers import PropiedadSerializer, UnidadSerializer,  PagoSerializer, UsuarioSerializer
 import json
 from django.http import JsonResponse
+from rest_framework.decorators import action
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.contrib.auth.hashers import check_password
@@ -70,7 +71,18 @@ class UnidadViewSet(viewsets.ModelViewSet):
             return Response(serializer.data)
         except Unidad.DoesNotExist:
             return Response({'error': 'No unidad matches the given query'}, status=status.HTTP_404_NOT_FOUND)
-      
+        
+    @action(detail=True, methods=['patch'])
+    def cambiar_estado(self, request, pk=None):
+        try:
+            unidad = self.get_object()
+            # Cambiar el estado de la unidad
+            nuevo_estado = request.data.get('estado', False)
+            unidad.estado = nuevo_estado
+            unidad.save()
+            return Response({'status': 'Estado actualizado correctamente'}, status=status.HTTP_200_OK)
+        except Unidad.DoesNotExist:
+            return Response({'error': 'Unidad no encontrada'}, status=status.HTTP_404_NOT_FOUND)
     
 
     
@@ -80,6 +92,13 @@ class PagoViewSet(viewsets.ModelViewSet):
     queryset = Pago.objects.all()
     serializer_class = PagoSerializer
     
+    @action(detail=True, methods=['patch'])
+    def cambiar_estado(self, request, pk=None):
+        pago = self.get_object()
+        pago.estado = not pago.estado  # Cambiar el estado
+        pago.save()
+        return Response({'estado': pago.estado})
+
     def create(self, request, *args, **kwargs):
         fecha_pago = request.data.get('fecha_pago')
         

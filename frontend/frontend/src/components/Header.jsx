@@ -18,44 +18,6 @@ const Header = () => {
 
   return (
     <header className="bg-white shadow-md text-white p-4 header">
-      <div className="container mx-auto flex justify-between items-center">
-        <nav>
-          <ul className="flex space-x-10 mt-4">
-            <li
-              className={`cursor-pointer ${
-                selectedMenu === "home" ? "text-black underline" : ""
-              }`}
-              onClick={() => handleMenuClick("home")}
-            >
-              <Link to="/">Home</Link>
-            </li>
-            <li
-              className={`cursor-pointer ${
-                selectedMenu === "about" ? "text-black underline" : ""
-              }`}
-              onClick={() => handleMenuClick("about")}
-            >
-              <Link to="/about">About</Link>
-            </li>
-            <li
-              className={`cursor-pointer ${
-                selectedMenu === "services" ? "text-black underline" : ""
-              }`}
-              onClick={() => handleMenuClick("services")}
-            >
-              <Link to="/services">Services</Link>
-            </li>
-            <li
-              className={`cursor-pointer ${
-                selectedMenu === "contact" ? "text-black underline" : ""
-              }`}
-              onClick={() => handleMenuClick("contact")}
-            >
-              <Link to="/contact">Contact</Link>
-            </li>
-          </ul>
-        </nav>
-      </div>
       <div className="usuario bg-claro flex space-x-3 mt-4 rounded-lg">
         <img src={iconUsuario} alt="usuario" className="w-11 mx-auto"></img>
         <span className="ml-1 mt-1">Admin</span>

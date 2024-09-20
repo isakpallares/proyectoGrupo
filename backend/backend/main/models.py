@@ -39,11 +39,13 @@ class Pago(models.Model):
         ('mantenimiento', 'Mantenimiento'),
         ('servicios', 'Servicios'),
     ]
+    id_pago = models.CharField(max_length=50, null=True, blank=True)
     id_propiedad = models.ForeignKey(Propiedad, on_delete=models.CASCADE, blank=True, null=True)
     id_unidad = models.ForeignKey(Unidad, on_delete=models.CASCADE, blank=True, null=True)
     fecha_pago = models.DateField()
     tipo_pago = models.CharField(max_length=20, choices=tipo_pago_choises, default='mantenimiento'
     )
+    estado = models.BooleanField(default=False)
     monto_pago = models.PositiveIntegerField(blank=True, null=True)
     def __str__(self):
         return f'Pago {self.fecha_pago}'

@@ -218,7 +218,6 @@ const PropiedadesPage = () => {
                                 type="number"
                                 name="numero_unidades"
                                 value={editFormData.numero_unidades}
-                                onChange={handleInputChange}
                                 className="border px-2"
                               />
                             ) : (

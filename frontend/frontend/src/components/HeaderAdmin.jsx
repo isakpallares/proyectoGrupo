@@ -49,12 +49,8 @@ const Header = () => {
               <Link to="/admin/unidades">Unidades</Link>
             </li>
             <li
-              className={`cursor-pointer ${
-                selectedMenu === "usuarios" ? "border-b-2 border-oscuro " : ""
-              }`}
-              onClick={() => handleMenuClick("usuarios")}
+              
             >
-              <Link to="/admin/usuarios">Usuarios</Link>
             </li>
           </ul>
         </nav>

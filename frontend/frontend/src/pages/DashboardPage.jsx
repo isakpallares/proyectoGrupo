@@ -74,7 +74,7 @@ function DashboardPage() {
   }, []);
 
   // Datos para los gráficos
-  const labels = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio"];
+  const labels = ["Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 
   const dataBar = {
     labels: labels,

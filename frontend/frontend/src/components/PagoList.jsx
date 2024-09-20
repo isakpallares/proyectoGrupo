@@ -61,7 +61,7 @@ function Pagos() {
 
     const handleEdit = (pago) => {
         setEditing(true);
-        setCurrentId(pago.id);
+        setCurrentId(pago.id_pago);
         setPago(pago);
     };
 
@@ -92,10 +92,10 @@ function Pagos() {
             </form>
             <ul>
                 {pagos.map(pago => (
-                    <li key={pago.id}>
+                    <li key={pago.id_pago}>
                         {pago.fecha} - {pago.monto} - {pago.cuota.unidad.numero_unidad} 
                         <button onClick={() => handleEdit(pago)}>Editar</button>
-                        <button onClick={() => handleDelete(pago.id)}>Eliminar</button>
+                        <button onClick={() => handleDelete(pago.id_pago)}>Eliminar</button>
                     </li>
                 ))}
             </ul>
